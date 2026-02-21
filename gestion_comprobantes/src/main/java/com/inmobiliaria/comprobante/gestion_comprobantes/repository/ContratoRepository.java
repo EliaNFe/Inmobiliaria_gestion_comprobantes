@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     List<Contrato> findByClienteId(Long clienteId);
+    boolean existsByClienteIdAndActivoTrue(Long clienteId);
+    List<Contrato> findByActivoTrue();
 }

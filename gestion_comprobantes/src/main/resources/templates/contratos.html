@@ -9,6 +9,16 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .contract-card:hover { border-color: #3b82f6; background-color: #fcfdfe; }
+        /* Efecto para contratos finalizados/inactivos */
+        .inactive-contract {
+            opacity: 0.65;
+            background-color: #f8fafc;
+            filter: grayscale(0.3);
+        }
+        .inactive-contract:hover {
+            opacity: 0.9;
+            filter: grayscale(0);
+        }
     </style>
 </head>
 
@@ -18,14 +28,14 @@
 
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
         <div>
-            <a href="/dashboard" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center mb-2">
+            <a th:href="@{/dashboard}" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center mb-2">
                 <span class="mr-1">←</span> Volver al Panel
             </a>
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Contratos</h1>
             <p class="text-slate-500 text-sm mt-1">Control de alquileres, montos mensuales y vigencias.</p>
         </div>
 
-        <a href="/contratos/nuevo"
+        <a th:href="@{/contratos/nuevo}"
            class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95">
             <span class="mr-2 text-xl">📄</span> Nuevo Contrato
         </a>
@@ -44,15 +54,25 @@
                 </thead>
                 <tbody class="divide-y divide-slate-50">
 
-                <tr th:each="c : ${contratos}" class="contract-card transition-all group">
+                <tr th:each="c : ${contratos}" class="contract-card transition-all group"
+                    th:classappend="${!c.activo} ? 'inactive-contract' : ''">
+
                     <td class="px-8 py-6">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <div th:classappend="${c.activo} ? 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-slate-200 text-slate-500'"
+                                 class="w-10 h-10 rounded-xl flex items-center justify-center mr-4 transition-colors">
                                 🏠
                             </div>
                             <div>
                                 <span class="font-bold text-slate-800 block text-base" th:text="${c.propiedad}">Calle Falsa 123</span>
-                                <span class="text-xs text-slate-400 font-bold uppercase tracking-tighter">Vivienda Familiar</span>
+                                <span th:if="${c.activo}"
+                                      class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">
+                                    Vigente
+                                </span>
+                                <span th:unless="${c.activo}"
+                                      class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-600 uppercase tracking-wider">
+                                    Finalizado
+                                </span>
                             </div>
                         </div>
                     </td>
@@ -60,11 +80,13 @@
                     <td class="px-8 py-6">
                         <div class="flex flex-col">
                             <span class="font-semibold text-slate-700" th:text="${c.cliente?.nombre ?: 'Sin asignar'}">Juan Pérez</span>
+                            <span class="text-[10px] text-slate-400 font-bold" th:text="'ID Contrato: #' + ${c.id}">#12</span>
                         </div>
                     </td>
 
                     <td class="px-8 py-6">
-                        <div class="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-lg">
+                        <div th:classappend="${c.activo} ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'"
+                             class="inline-flex items-center px-4 py-2 rounded-xl font-bold text-lg">
                             <span class="mr-1 text-sm">$</span>
                             <span th:text="${#numbers.formatDecimal(c.montoMensual, 0, 'POINT', 0, 'COMMA')}">150.000</span>
                         </div>
@@ -72,12 +94,28 @@
 
                     <td class="px-8 py-6 text-right">
                         <div class="flex justify-end gap-2">
+
+                            <form th:if="${c.activo}" th:action="@{/contratos/{id}/inactivar(id=${c.id})}" method="post" style="display:inline;">
+                                <button type="submit" title="Finalizar Contrato"
+                                        class="p-2.5 rounded-xl transition-all border border-transparent text-amber-600 hover:bg-amber-50 hover:border-amber-100">
+                                    🚫
+                                </button>
+                            </form>
+
+                            <form th:unless="${c.activo}" th:action="@{/contratos/{id}/activar(id=${c.id})}" method="post" style="display:inline;">
+                                <button type="submit" title="Reactivar Contrato"
+                                        class="p-2.5 rounded-xl transition-all border border-transparent text-emerald-600 hover:bg-emerald-50 hover:border-emerald-100">
+                                    ✅
+                                </button>
+                            </form>
+
                             <a th:href="@{/contratos/editar/{id}(id=${c.id})}"
                                class="p-2.5 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all border border-slate-100"
                                title="Editar Contrato">
                                 ⚙️
                             </a>
-                            <a th:href="@{/comprobantes/nuevo(contratoId=${c.id})}"
+
+                            <a th:if="${c.activo}" th:href="@{/comprobantes/nuevo(contratoId=${c.id})}"
                                class="p-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl transition-all shadow-md shadow-blue-100"
                                title="Generar Recibo">
                                 🧾
@@ -89,7 +127,7 @@
                 <tr th:if="${#lists.isEmpty(contratos)}">
                     <td colspan="4" class="px-8 py-24 text-center">
                         <div class="text-6xl mb-6 opacity-20">📑</div>
-                        <h3 class="text-xl font-bold text-slate-800">No hay contratos vigentes</h3>
+                        <h3 class="text-xl font-bold text-slate-800">No hay contratos registrados</h3>
                         <p class="text-slate-500 mt-2 max-w-sm mx-auto">Registra un nuevo contrato vinculando una propiedad con un cliente para empezar la gestión.</p>
                     </td>
                 </tr>
@@ -100,9 +138,11 @@
         <div class="bg-slate-50/50 px-8 py-5 border-t border-slate-100">
             <div class="flex items-center justify-between">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                   th:text="${#lists.size(contratos)} + ' contratos activos en sistema'"></p>
-                <div class="text-xs text-slate-400">
-                    Tip: Los montos se actualizan según el índice pactado.
+                   th:text="${#lists.size(contratos)} + ' contratos totales en sistema'"></p>
+                <div class="hidden md:block text-xs text-slate-400">
+                    <span class="mr-3">🚫 Finalizar</span>
+                    <span class="mr-3">✅ Reactivar</span>
+                    <span>🧾 Generar Recibo</span>
                 </div>
             </div>
         </div>

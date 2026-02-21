@@ -6,10 +6,7 @@ import com.inmobiliaria.comprobante.gestion_comprobantes.service.ContratoService
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,6 +27,18 @@ public class ContratoController {
         model.addAttribute("contrato", new Contrato());
         model.addAttribute("clientes", clienteService.listarTodos());
         return "contratos-form";
+    }
+
+    @PostMapping("/{id}/inactivar")
+    public String inactivar(@PathVariable Long id) {
+        contratoService.cambiarEstado(id, false); // O el método que definas
+        return "redirect:/contratos";
+    }
+
+    @PostMapping("/{id}/activar")
+    public String activar(@PathVariable Long id) {
+        contratoService.cambiarEstado(id, true);
+        return "redirect:/contratos";
     }
 
     @PostMapping

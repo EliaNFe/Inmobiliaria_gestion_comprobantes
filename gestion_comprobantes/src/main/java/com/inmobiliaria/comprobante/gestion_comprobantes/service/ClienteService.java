@@ -2,6 +2,7 @@ package com.inmobiliaria.comprobante.gestion_comprobantes.service;
 
 import com.inmobiliaria.comprobante.gestion_comprobantes.model.Cliente;
 import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ClienteRepository;
+import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ContratoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final ContratoRepository contratoRepository;
 
     public Page<Cliente> listarTodospaginable(String buscar, Pageable pageable) {
         if (buscar != null && !buscar.isEmpty()) {
@@ -38,8 +40,15 @@ public class ClienteService {
 
     @Transactional
     public void inactivar(Long id) {
-        Cliente c = clienteRepository.findById(id)
-                .orElseThrow();
+        Cliente c = clienteRepository.findById(id).orElseThrow();
+
+        boolean tieneContratosActivos =
+                contratoRepository.existsByClienteIdAndActivoTrue(id);
+
+        if (tieneContratosActivos) {
+            throw new IllegalStateException(
+                    "No se puede inactivar el cliente porque tiene contratos activos");
+        }
 
         c.setActivo(false);
     }

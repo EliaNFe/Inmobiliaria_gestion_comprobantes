@@ -4,6 +4,7 @@ import com.inmobiliaria.comprobante.gestion_comprobantes.model.Contrato;
 import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ContratoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +20,13 @@ public class ContratoService {
     }
 
 
-
+    @Transactional
+    public void cambiarEstado(Long id, boolean estado) {
+        Contrato c = contratoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
+        c.setActivo(estado);
+        contratoRepository.save(c);
+    }
 
     public void guardar(Contrato contrato) {
         if (contrato.getMesesActualizacion() <= 0) {

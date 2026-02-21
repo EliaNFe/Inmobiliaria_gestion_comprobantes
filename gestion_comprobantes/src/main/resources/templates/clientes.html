@@ -43,6 +43,16 @@
         </form>
     </div>
 
+    <div th:if="${ok}"
+         class="mb-4 p-3 bg-green-100 text-green-800 rounded-xl">
+        <span th:text="${ok}"></span>
+    </div>
+
+    <div th:if="${error}"
+         class="mb-4 p-3 bg-red-100 text-red-800 rounded-xl">
+        <span th:text="${error}"></span>
+    </div>
+
     <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">

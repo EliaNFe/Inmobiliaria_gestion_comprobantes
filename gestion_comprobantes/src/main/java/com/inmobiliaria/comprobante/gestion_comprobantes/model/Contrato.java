@@ -42,6 +42,9 @@ public class Contrato {
 
     private LocalDate fechaUltimaActualizacion;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean activo = true;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
