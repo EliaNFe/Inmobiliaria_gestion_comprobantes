@@ -1,11 +1,18 @@
 package com.inmobiliaria.comprobante.gestion_comprobantes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 public class Cliente {
 
@@ -19,4 +26,5 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente")
     private List<Contrato> contratos;
+
 }

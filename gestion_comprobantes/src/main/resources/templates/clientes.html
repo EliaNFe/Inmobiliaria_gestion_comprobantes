@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InmoDoc | Listado de Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .table-row:hover { background-color: #f8fafc; }
+    </style>
+</head>
+
+<body class="bg-[#F9FAFB] min-h-screen p-4 md:p-12">
+
+<div class="max-w-6xl mx-auto">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <a href="/dashboard" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center mb-2">
+                <span class="mr-1">←</span> Volver al Panel
+            </a>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Cartera de Clientes</h1>
+            <p class="text-slate-500 text-sm mt-1">Administra la información de contacto de inquilinos y propietarios.</p>
+        </div>
+
+        <a href="/clientes/nuevo"
+           class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95">
+            <span class="mr-2 text-xl">+</span> Nuevo Cliente
+        </a>
+    </div>
+
+    <div class="bg-white p-4 rounded-[2rem] shadow-sm border border-slate-200 mb-6 flex items-center">
+        <form method="get" class="w-full relative">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                    🔍
+                </span>
+            <input type="text" name="buscar" th:value="${buscar}"
+                   placeholder="Buscar por nombre, DNI o teléfono..."
+                   class="w-full bg-slate-50 border border-slate-100 rounded-xl pl-12 pr-4 py-3 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-slate-600">
+        </form>
+    </div>
+
+    <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Nombre Completo</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">DNI / Identificación</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Teléfono</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-right text-slate-400">Acciones</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                <tr th:each="c : ${clientes}" class="table-row transition-colors group">
+                    <td class="px-8 py-5">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">
+                                <span th:text="${#strings.substring(c.nombre,0,1)}">U</span>
+                            </div>
+                            <span class="font-semibold text-slate-700" th:text="${c.nombre}">Juan Pérez</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-slate-600 font-medium">
+                        <span class="bg-slate-100 px-3 py-1 rounded-lg text-sm" th:text="${c.dni}">20.123.456</span>
+                    </td>
+                    <td class="px-8 py-5 text-slate-600">
+                        <div class="flex items-center">
+                            <span class="mr-2 text-xs">📞</span>
+                            <span th:text="${c.telefono}">2494 123456</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-right">
+                        <button class="text-slate-400 hover:text-blue-600 transition-colors p-2 font-bold text-xl">
+                            ⋮
+                        </button>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(clientes)}">
+                    <td colspan="4" class="px-8 py-20 text-center">
+                        <div class="text-4xl mb-4">📂</div>
+                        <h3 class="text-lg font-bold text-slate-800">No hay clientes aún</h3>
+                        <p class="text-slate-500">Comienza cargando tu primer inquilino o propietario.</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-slate-50/50 px-8 py-4 border-t border-slate-100 flex justify-between items-center">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest"
+               th:text="${#lists.size(clientes)} + ' clientes registrados'"></p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

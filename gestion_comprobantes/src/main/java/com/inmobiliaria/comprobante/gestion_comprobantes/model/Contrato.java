@@ -1,7 +1,7 @@
 package com.inmobiliaria.comprobante.gestion_comprobantes.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,7 +13,8 @@ public class Contrato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal alquilerActual;
+    private Double montoMensual;
+    private String propiedad;
     private Integer mesesActualizacion;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InmoDoc | Nuevo Cliente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .form-input {
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="bg-[#F9FAFB] min-h-screen flex items-center justify-center p-6">
+
+<div class="max-w-xl w-full">
+
+    <a href="/clientes" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-blue-600 mb-6 transition-colors">
+        <span class="mr-2">←</span> Volver a la lista de clientes
+    </a>
+
+    <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/60 p-10 border border-slate-100">
+
+        <header class="mb-10">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-indigo-50 rounded-xl mb-4">
+                <span class="text-xl">👤</span>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Registro de Cliente</h1>
+            <p class="text-slate-500 text-sm mt-1">Ingresa los datos del inquilino o propietario para el sistema.</p>
+        </header>
+
+        <form th:action="@{/clientes}" method="post" th:object="${cliente}" class="space-y-6">
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Nombre Completo</label>
+                <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                            📝
+                        </span>
+                    <input type="text" th:field="*{nombre}"
+                           placeholder="Ej: Juan Pérez"
+                           class="form-input w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 outline-none text-slate-700 placeholder:text-slate-400"
+                           required/>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">DNI / CUIL</label>
+                    <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                                🆔
+                            </span>
+                        <input type="text" th:field="*{dni}"
+                               placeholder="Sin puntos"
+                               class="form-input w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 outline-none text-slate-700 placeholder:text-slate-400"
+                               required/>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Teléfono</label>
+                    <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                                📞
+                            </span>
+                        <input type="text" th:field="*{telefono}"
+                               placeholder="2494..."
+                               class="form-input w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 outline-none text-slate-700 placeholder:text-slate-400"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-[0.98]">
+                    Guardar Cliente
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <p class="text-center text-slate-400 text-xs mt-8 uppercase tracking-widest font-bold">
+        InmoDoc • Sistema de Gestión v1.0
+    </p>
+</div>
+
+</body>
+</html>
