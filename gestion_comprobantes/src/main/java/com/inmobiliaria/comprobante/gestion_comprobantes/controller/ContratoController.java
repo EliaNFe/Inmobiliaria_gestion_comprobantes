@@ -8,6 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/contratos")
@@ -25,7 +29,8 @@ public class ContratoController {
     @GetMapping("/nuevo")
     public String nuevoContrato(Model model) {
         model.addAttribute("contrato", new Contrato());
-        model.addAttribute("clientes", clienteService.listarTodos());
+        model.addAttribute("inquilinos", clienteService.listarInquilinosActivos());
+        model.addAttribute("propietarios", clienteService.listarPropietariosActivos());
         return "contratos-form";
     }
 
@@ -41,9 +46,100 @@ public class ContratoController {
         return "redirect:/contratos";
     }
 
-    @PostMapping
-    public String guardar(@ModelAttribute Contrato contrato) {
-        contratoService.guardar(contrato);
-        return "redirect:/contratos";
+    @GetMapping("/editar/{id}")
+    public String editarContrato(@PathVariable Long id, Model model) {
+        Contrato contrato = contratoService.buscarPorId(id);
+        model.addAttribute("contrato", contrato);
+        model.addAttribute("inquilinos", clienteService.listarInquilinosActivos());
+        model.addAttribute("propietarios", clienteService.listarPropietariosActivos());
+
+        return "contratos-form";
     }
+
+    @PostMapping
+    public String guardar(@ModelAttribute("contrato") Contrato contrato, Model model) {
+        try {
+            // VALIDACION: Evitar que el propietario sea la misma persona que el inquilino
+            if (contrato.getPropietario() != null && contrato.getCliente() != null) {
+                Long idPropietario = contrato.getPropietario().getId();
+                Long idInquilino = contrato.getCliente().getId();
+
+                if (idPropietario != null && idInquilino != null && idPropietario.equals(idInquilino)) {
+                    model.addAttribute("error", "Un cliente no puede ser propietario e inquilino en el mismo contrato.");
+                    model.addAttribute("inquilinos", clienteService.listarInquilinosActivos());
+                    model.addAttribute("propietarios", clienteService.listarPropietariosActivos());
+                    return "contratos-form";
+                }
+            }
+
+            if (contrato.getId() != null) {
+                Contrato contratoDB = contratoService.buscarPorId(contrato.getId());
+
+                // Actualización de campos básicos
+                if (contrato.getPropiedad() != null && !contrato.getPropiedad().isBlank()) {
+                    contratoDB.setPropiedad(contrato.getPropiedad());
+                }
+                if (contrato.getMontoMensual() != null) {
+                    contratoDB.setMontoMensual(contrato.getMontoMensual());
+                }
+                if (contrato.getMesesActualizacion() != null) {
+                    contratoDB.setMesesActualizacion(contrato.getMesesActualizacion());
+                }
+                if (contrato.getFechaInicio() != null) {
+                    contratoDB.setFechaInicio(contrato.getFechaInicio());
+                }
+                if (contrato.getFechaFin() != null) {
+                    contratoDB.setFechaFin(contrato.getFechaFin());
+                }
+
+                // Actualización de Relaciones (Inquilino y Propietario)
+                if (contrato.getCliente() != null && contrato.getCliente().getId() != null) {
+                    contratoDB.setCliente(contrato.getCliente());
+                }
+                if (contrato.getPropietario() != null && contrato.getPropietario().getId() != null) {
+                    contratoDB.setPropietario(contrato.getPropietario());
+                }
+
+                contratoService.guardar(contratoDB);
+            } else {
+                contrato.setActivo(true);
+                contratoService.guardar(contrato);
+            }
+
+            return "redirect:/contratos";
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al procesar: " + e.getMessage());
+            model.addAttribute("inquilinos", clienteService.listarInquilinosActivos());
+            model.addAttribute("propietarios", clienteService.listarPropietariosActivos());
+            return "contratos-form";
+        }
+    }
+
+    @PostMapping("/{id}/actualizar-monto")
+    public String actualizarMonto(@PathVariable Long id, @RequestParam BigDecimal porcentaje) {
+        Contrato contrato = contratoService.buscarPorId(id);
+
+        BigDecimal montoActual = contrato.getMontoMensual();
+
+        // Calculamos el incremento: (monto * porcentaje) / 100
+        BigDecimal incremento = montoActual.multiply(porcentaje)
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+        // Sumamos al monto original
+        BigDecimal nuevoMonto = montoActual.add(incremento);
+
+        contrato.setMontoMensual(nuevoMonto);
+        contrato.setFechaUltimaActualizacion(LocalDate.now());
+
+        contratoService.guardar(contrato);
+        return "redirect:/contratos/" + id;
+    }
+
+    @GetMapping("/{id}")
+    public String verDetalle(@PathVariable Long id, Model model) {
+        model.addAttribute("contrato", contratoService.buscarPorId(id));
+        return "contrato-detalle";
+    }
+
 }

@@ -53,6 +53,18 @@ public class ClienteController {
     }
 
 
+    @GetMapping("/editar/{id}")
+    public String editarCliente(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        try {
+            Cliente cliente = clienteService.obtenerPorId(id);
+            model.addAttribute("cliente", cliente);
+            return "clientes-form";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "No se encontró el cliente");
+            return "redirect:/clientes";
+        }
+    }
+
     @GetMapping("/nuevo")
     public String nuevoCliente(Model model) {
         model.addAttribute("cliente", new Cliente());

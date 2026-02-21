@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InmoDoc | Nuevo Contrato</title>
+    <title>InmoDoc | Gestión de Contrato</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,37 +15,62 @@
 
 <body class="bg-[#F9FAFB] min-h-screen p-4 md:p-12">
 
-<div class="max-w-3xl mx-auto">
-
+<div class="max-w-4xl mx-auto">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Nuevo Contrato</h1>
-            <p class="text-slate-500 text-sm mt-1">Vincula un inquilino con una propiedad y define los términos.</p>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                th:text="${contrato.id != null ? 'Editar Contrato' : 'Nuevo Contrato'}">
+                Nuevo Contrato
+            </h1>
+            <p class="text-slate-500 text-sm mt-1">
+                <span th:if="${contrato.id != null}">Modifica los términos actuales del acuerdo.</span>
+                <span th:unless="${contrato.id != null}">Vincula un propietario, un inquilino y una propiedad.</span>
+            </p>
         </div>
         <a th:href="@{/contratos}" class="group flex items-center text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors">
             <span class="mr-2 transition-transform group-hover:-translate-x-1">←</span> Volver al listado
         </a>
     </div>
 
+    <div th:if="${error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm">
+        <div class="flex items-center">
+            <span class="mr-3 text-xl">⚠️</span>
+            <p class="text-red-700 font-bold text-sm" th:text="${error}"></p>
+        </div>
+    </div>
+
     <form th:action="@{/contratos}" method="post" th:object="${contrato}" class="space-y-6">
+
+        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{activo}" />
+        <input type="hidden" th:field="*{fechaUltimaActualizacion}" />
 
         <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 form-section">
             <h2 class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-6 flex items-center">
                 <span class="mr-2 text-lg">📍</span> Información Principal
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Inquilino</label>
-                    <select th:field="*{cliente.id}"
+                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1 text-blue-600">Propietario</label>
+                    <select th:field="*{propietario.id}"
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-slate-700 appearance-none" required>
-                        <option value="">Seleccionar cliente...</option>
-                        <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombre}"></option>
+                        <option value="">Seleccionar dueño...</option>
+                        <option th:each="p : ${propietarios}" th:value="${p.id}" th:text="${p.nombre}"></option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Propiedad</label>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1 text-emerald-600">Inquilino</label>
+                    <select th:field="*{cliente.id}"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-slate-700 appearance-none" required>
+                        <option value="">Seleccionar inquilino...</option>
+                        <option th:each="i : ${inquilinos}" th:value="${i.id}" th:text="${i.nombre}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 ml-1">Propiedad (Dirección)</label>
                     <input th:field="*{propiedad}"
                            placeholder="Ej: San Martín 123 - 2B"
                            class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-slate-700"
@@ -89,13 +114,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-400 mb-2 ml-1 uppercase tracking-tighter">Fecha de Inicio</label>
-                    <input type="date" th:field="*{fechaInicio}"
+                    <input type="date"
+                           th:field="*{fechaInicio}"
                            class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all text-slate-700"
                            required/>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-400 mb-2 ml-1 uppercase tracking-tighter">Fecha de Finalización</label>
-                    <input type="date" th:field="*{fechaFin}"
+                    <input type="date"
+                           th:field="*{fechaFin}"
                            class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all text-slate-700"
                            required/>
                 </div>
@@ -103,7 +130,8 @@
         </div>
 
         <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-5 rounded-[2rem] shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-[0.98] text-lg">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-5 rounded-[2rem] shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-[0.98] text-lg"
+                th:text="${contrato.id != null ? 'Actualizar Cambios' : 'Confirmar y Guardar Contrato'}">
             Confirmar y Guardar Contrato
         </button>
 
@@ -116,6 +144,7 @@
         const fin = document.querySelector('input[type="date"]:last-of-type');
 
         if (inicio && fin) {
+            if (inicio.value) fin.min = inicio.value;
             inicio.addEventListener("change", function () {
                 fin.min = inicio.value;
             });

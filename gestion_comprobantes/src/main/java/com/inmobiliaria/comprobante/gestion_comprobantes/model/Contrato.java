@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,9 +35,11 @@ public class Contrato {
     @Max(value = 24, message = "Máximo 24 meses")
     private Integer mesesActualizacion;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Fecha inicio obligatoria")
     private LocalDate fechaInicio;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Fecha fin obligatoria")
     private LocalDate fechaFin;
 
@@ -48,6 +51,10 @@ public class Contrato {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "propietario_id")
+    private Cliente propietario;
 
     public boolean necesitaActualizacion() {
         if (fechaUltimaActualizacion == null || mesesActualizacion == null) {

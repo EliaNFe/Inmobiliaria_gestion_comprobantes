@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InmoDoc | Listado de Clientes</title>
+    <title>InmoDoc | Gestión de Personas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -24,13 +24,13 @@
             <a th:href="@{/dashboard}" class="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center mb-2">
                 <span class="mr-1">←</span> Volver al Panel
             </a>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Cartera de Clientes</h1>
-            <p class="text-slate-500 text-sm mt-1">Administra la información de contacto y el estado de tus clientes.</p>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Cartera de Personas</h1>
+            <p class="text-slate-500 text-sm mt-1">Administra propietarios e inquilinos desde un solo lugar.</p>
         </div>
 
         <a th:href="@{/clientes/nuevo}"
            class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95">
-            <span class="mr-2 text-xl">+</span> Nuevo Cliente
+            <span class="mr-2 text-xl">+</span> Nueva Persona
         </a>
     </div>
 
@@ -43,125 +43,99 @@
         </form>
     </div>
 
-    <div th:if="${ok}"
-         class="mb-4 p-3 bg-green-100 text-green-800 rounded-xl">
-        <span th:text="${ok}"></span>
-    </div>
-
-    <div th:if="${error}"
-         class="mb-4 p-3 bg-red-100 text-red-800 rounded-xl">
-        <span th:text="${error}"></span>
-    </div>
+    <div th:if="${ok}" class="mb-4 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-xl font-bold text-sm" th:text="${ok}"></div>
+    <div th:if="${error}" class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-xl font-bold text-sm" th:text="${error}"></div>
 
     <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                 <tr class="bg-slate-50/50 border-b border-slate-100">
-                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Nombre Completo</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Nombre / Identificación</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Roles</th>
                     <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Estado</th>
-                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">DNI / Teléfono</th>
                     <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-right text-slate-400">Acciones</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                 <tr th:each="c : ${clientes}" class="table-row group" th:classappend="${!c.activo} ? 'inactive-row' : ''">
+
                     <td class="px-8 py-5">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm mr-3 shadow-sm">
-                                <span th:text="${#strings.substring(c.nombre,0,1)}">U</span>
-                            </div>
+                            <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 rounded-full flex items-center justify-center font-bold text-sm mr-3 shadow-sm"
+                                 th:text="${#strings.substring(c.nombre,0,1)}">U</div>
                             <div>
                                 <span class="font-semibold text-slate-700 block" th:text="${c.nombre}">Juan Pérez</span>
-                                <span class="text-xs text-slate-400 font-medium" th:text="'DNI: ' + ${c.dni}">20.123.456</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter" th:text="'DNI: ' + ${c.dni}">20123456</span>
                             </div>
                         </div>
                     </td>
 
                     <td class="px-8 py-5">
-                        <span th:if="${c.activo}"
-                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Activo
-                        </span>
-                        <span th:unless="${c.activo}"
-                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-600">
-                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span> Inactivo
-                        </span>
+                        <div class="flex flex-wrap gap-1">
+                            <span th:if="${c.esPropietario}"
+                                  class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-blue-100 text-blue-600 border border-blue-200 uppercase tracking-tighter">
+                                Propietario
+                            </span>
+                            <span th:if="${c.esInquilino}"
+                                  class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-600 border border-emerald-200 uppercase tracking-tighter">
+                                Inquilino
+                            </span>
+                        </div>
                     </td>
 
-                    <td class="px-8 py-5 text-slate-600">
-                        <div class="flex items-center text-sm">
-                            <span class="mr-2">📞</span>
-                            <span th:text="${c.telefono}">2494 123456</span>
-                        </div>
+                    <td class="px-8 py-5">
+                        <span th:if="${c.activo}" class="text-xs font-bold text-emerald-500 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span> Activo
+                        </span>
+                        <span th:unless="${c.activo}" class="text-xs font-bold text-slate-400 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300 mr-2"></span> Inactivo
+                        </span>
                     </td>
 
                     <td class="px-8 py-5 text-right">
-                        <div class="flex justify-end gap-2">
-
-                            <form th:if="${c.activo}" th:action="@{/clientes/{id}/inactivar(id=${c.id})}" method="post" style="display:inline;">
-                                <button type="submit" title="Dar de baja"
-                                        class="p-2.5 rounded-xl transition-all border border-transparent text-amber-600 hover:bg-amber-50 hover:border-amber-100">
+                        <div class="flex justify-end gap-1">
+                            <form th:if="${c.activo}" th:action="@{/clientes/{id}/inactivar(id=${c.id})}" method="post">
+                                <button type="submit" class="p-2.5 rounded-xl text-amber-600 hover:bg-amber-50 transition-all" title="Inactivar">
                                     🚫
                                 </button>
                             </form>
 
-                            <form th:unless="${c.activo}" th:action="@{/clientes/{id}/activar(id=${c.id})}" method="post" style="display:inline;">
-                                <button type="submit" title="Dar de alta"
-                                        class="p-2.5 rounded-xl transition-all border border-transparent text-emerald-600 hover:bg-emerald-50 hover:border-emerald-100">
+                            <form th:unless="${c.activo}" th:action="@{/clientes/{id}/activar(id=${c.id})}" method="post">
+                                <button type="submit" class="p-2.5 rounded-xl text-emerald-600 hover:bg-emerald-50 transition-all" title="Activar">
                                     ✅
                                 </button>
                             </form>
 
                             <a th:href="@{/clientes/editar/{id}(id=${c.id})}"
-                               class="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl border border-transparent hover:border-blue-100 transition-all"
-                               title="Editar datos">
+                               class="p-2.5 text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Editar">
                                 ✏️
                             </a>
-
                         </div>
                     </td>
                 </tr>
 
                 <tr th:if="${clientes.empty}">
-                    <td colspan="4" class="px-8 py-20 text-center">
-                        <div class="text-5xl mb-4">📂</div>
-                        <h3 class="text-lg font-bold text-slate-800">No hay clientes registrados</h3>
-                        <p class="text-slate-500">Intenta con otro término de búsqueda o agrega uno nuevo.</p>
+                    <td colspan="4" class="px-8 py-20 text-center text-slate-400">
+                        <p class="text-4xl mb-4">👥</p>
+                        <p class="font-bold">No se encontraron personas.</p>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <div class="bg-slate-50/50 px-8 py-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-
+        <div class="bg-slate-50/50 px-8 py-6 border-t border-slate-100 flex justify-between items-center">
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Mostrando <span th:text="${clientes.numberOfElements}" class="text-slate-700">0</span>
-                de <span th:text="${clientes.totalElements}" class="text-slate-700">0</span> clientes
+                Total: <span th:text="${clientes.totalElements}" class="text-slate-700"></span> personas
             </p>
 
-            <nav th:if="${clientes.totalPages > 1}" class="flex items-center gap-1">
-                <a th:href="@{/clientes(page=${clientes.number - 1}, buscar=${buscar})}"
-                   th:classappend="${clientes.first} ? 'pointer-events-none opacity-40' : 'hover:bg-white hover:shadow-md'"
-                   class="p-2 rounded-lg border border-slate-200 text-slate-600 transition-all">
-                    &larr;
-                </a>
-
-                <div class="flex gap-1 mx-2">
-                    <a th:each="i : ${#numbers.sequence(0, clientes.totalPages - 1)}"
-                       th:if="${i >= clientes.number - 2 and i <= clientes.number + 2}"
-                       th:href="@{/clientes(page=${i}, buscar=${buscar})}"
-                       th:text="${i + 1}"
-                       th:classappend="${i == clientes.number} ? 'page-link-active shadow-lg shadow-blue-100' : 'bg-white hover:bg-slate-100'"
-                       class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-sm font-bold transition-all">
-                    </a>
-                </div>
-
-                <a th:href="@{/clientes(page=${clientes.number + 1}, buscar=${buscar})}"
-                   th:classappend="${clientes.last} ? 'pointer-events-none opacity-40' : 'hover:bg-white hover:shadow-md'"
-                   class="p-2 rounded-lg border border-slate-200 text-slate-600 transition-all">
-                    &rarr;
+            <nav th:if="${clientes.totalPages > 1}" class="flex gap-1">
+                <a th:each="i : ${#numbers.sequence(0, clientes.totalPages - 1)}"
+                   th:href="@{/clientes(page=${i}, buscar=${buscar})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == clientes.number} ? 'page-link-active' : 'bg-white hover:bg-slate-100'"
+                   class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-xs font-bold transition-all">
                 </a>
             </nav>
         </div>

@@ -9,7 +9,6 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .contract-card:hover { border-color: #3b82f6; background-color: #fcfdfe; }
-        /* Efecto para contratos finalizados/inactivos */
         .inactive-contract {
             opacity: 0.65;
             background-color: #f8fafc;
@@ -47,7 +46,7 @@
                 <thead>
                 <tr class="bg-slate-50/50 border-b border-slate-100">
                     <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Propiedad / Dirección</th>
-                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Inquilino</th>
+                    <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Intervinientes</th>
                     <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-slate-400">Monto Mensual</th>
                     <th class="px-8 py-5 text-xs uppercase tracking-widest font-bold text-right text-slate-400">Acciones</th>
                 </tr>
@@ -78,9 +77,15 @@
                     </td>
 
                     <td class="px-8 py-6">
-                        <div class="flex flex-col">
-                            <span class="font-semibold text-slate-700" th:text="${c.cliente?.nombre ?: 'Sin asignar'}">Juan Pérez</span>
-                            <span class="text-[10px] text-slate-400 font-bold" th:text="'ID Contrato: #' + ${c.id}">#12</span>
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center">
+                                <span class="text-[9px] font-black bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded mr-2 uppercase tracking-tighter">Dueño</span>
+                                <span class="font-semibold text-slate-700 text-sm" th:text="${c.propietario?.nombre ?: 'Sin asignar'}">Juan Propietario</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-[9px] font-black bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded mr-2 uppercase tracking-tighter">Inq.</span>
+                                <span class="text-slate-500 text-sm" th:text="${c.cliente?.nombre ?: 'Sin asignar'}">Pedro Inquilino</span>
+                            </div>
                         </div>
                     </td>
 
@@ -94,6 +99,11 @@
 
                     <td class="px-8 py-6 text-right">
                         <div class="flex justify-end gap-2">
+                            <a th:href="@{/contratos/{id}(id=${c.id})}"
+                               class="p-2.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl transition-all border border-indigo-100"
+                               title="Ver Detalles">
+                                🔍
+                            </a>
 
                             <form th:if="${c.activo}" th:action="@{/contratos/{id}/inactivar(id=${c.id})}" method="post" style="display:inline;">
                                 <button type="submit" title="Finalizar Contrato"
@@ -128,7 +138,7 @@
                     <td colspan="4" class="px-8 py-24 text-center">
                         <div class="text-6xl mb-6 opacity-20">📑</div>
                         <h3 class="text-xl font-bold text-slate-800">No hay contratos registrados</h3>
-                        <p class="text-slate-500 mt-2 max-w-sm mx-auto">Registra un nuevo contrato vinculando una propiedad con un cliente para empezar la gestión.</p>
+                        <p class="text-slate-500 mt-2 max-w-sm mx-auto">Registra un nuevo contrato vinculando un dueño con un inquilino.</p>
                     </td>
                 </tr>
                 </tbody>
@@ -140,9 +150,10 @@
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest"
                    th:text="${#lists.size(contratos)} + ' contratos totales en sistema'"></p>
                 <div class="hidden md:block text-xs text-slate-400">
+                    <span class="mr-3">🔍 Detalles</span>
                     <span class="mr-3">🚫 Finalizar</span>
                     <span class="mr-3">✅ Reactivar</span>
-                    <span>🧾 Generar Recibo</span>
+                    <span>🧾 Recibo</span>
                 </div>
             </div>
         </div>

@@ -29,6 +29,14 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
+    public List<Cliente> listarInquilinosActivos() {
+        return clienteRepository.findByEsInquilinoTrueAndActivoTrue();
+    }
+
+    public List<Cliente> listarPropietariosActivos() {
+        return clienteRepository.findByEsPropietarioTrueAndActivoTrue();
+    }
+
     public List<Cliente> listarTodosActivos() {
         return clienteRepository.findByActivoTrue();
     }
@@ -42,12 +50,14 @@ public class ClienteService {
     public void inactivar(Long id) {
         Cliente c = clienteRepository.findById(id).orElseThrow();
 
-        boolean tieneContratosActivos =
-                contratoRepository.existsByClienteIdAndActivoTrue(id);
 
-        if (tieneContratosActivos) {
+        boolean esInquilinoActivo = contratoRepository.existsByClienteIdAndActivoTrue(id);
+        boolean esPropietarioActivo = contratoRepository.existsByPropietarioIdAndActivoTrue(id);
+
+        if (esInquilinoActivo || esPropietarioActivo) {
+            String rol = esInquilinoActivo ? "inquilino" : "propietario";
             throw new IllegalStateException(
-                    "No se puede inactivar el cliente porque tiene contratos activos");
+                    "No se puede inactivar porque tiene contratos activos como " + rol);
         }
 
         c.setActivo(false);
@@ -63,15 +73,19 @@ public class ClienteService {
 
 
     public Cliente guardar(Cliente cliente) {
+        // Aquí podrías agregar lógica por defecto, ej: si no se marcó nada, es inquilino
+        if (!cliente.isEsInquilino() && !cliente.isEsPropietario()) {
+            cliente.setEsInquilino(true);
+        }
         return clienteRepository.save(cliente);
-    }
-
-    public List<Cliente> buscarPorNombre(String nombre) {
-        return clienteRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
     public Cliente obtenerPorId(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
+    }
+
+    public List<Cliente> buscarPorNombre(String nombre) {
+        return clienteRepository.findByNombreContainingIgnoreCase(nombre);
     }
 }
