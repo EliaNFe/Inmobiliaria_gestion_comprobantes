@@ -122,11 +122,9 @@ public class ContratoController {
 
         BigDecimal montoActual = contrato.getMontoMensual();
 
-        // Calculamos el incremento: (monto * porcentaje) / 100
         BigDecimal incremento = montoActual.multiply(porcentaje)
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
-        // Sumamos al monto original
         BigDecimal nuevoMonto = montoActual.add(incremento);
 
         contrato.setMontoMensual(nuevoMonto);
@@ -134,6 +132,42 @@ public class ContratoController {
 
         contratoService.guardar(contrato);
         return "redirect:/contratos/" + id;
+    }
+
+    @GetMapping("/{id}/comprobante")
+    public String generarComprobanteDirecto(@PathVariable Long id, Model model) {
+        Contrato contrato = contratoService.buscarPorId(id);
+
+        model.addAttribute("contrato", contrato);
+        model.addAttribute("luz", BigDecimal.ZERO);
+        model.addAttribute("gas", BigDecimal.ZERO);
+        model.addAttribute("total", contrato.getMontoMensual());
+        model.addAttribute("fechaHoy", LocalDate.now());
+        model.addAttribute("nota", "");
+
+        return "contrato-recibo";
+    }
+
+    @PostMapping("/{id}/generar-recibo")
+    public String generarRecibo(
+            @PathVariable Long id,
+            @RequestParam BigDecimal luz,
+            @RequestParam BigDecimal gas,
+            @RequestParam(required = false) String nota,
+            Model model) {
+
+        Contrato contrato = contratoService.buscarPorId(id);
+
+        BigDecimal total = contrato.getMontoMensual().add(luz).add(gas);
+
+        model.addAttribute("contrato", contrato);
+        model.addAttribute("luz", luz);
+        model.addAttribute("gas", gas);
+        model.addAttribute("nota", nota);
+        model.addAttribute("total", total);
+        model.addAttribute("fechaHoy", LocalDate.now());
+
+        return "contrato-recibo";
     }
 
     @GetMapping("/{id}")
