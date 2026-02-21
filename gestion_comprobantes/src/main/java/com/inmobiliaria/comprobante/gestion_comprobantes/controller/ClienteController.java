@@ -1,13 +1,17 @@
 package com.inmobiliaria.comprobante.gestion_comprobantes.controller;
-
 import com.inmobiliaria.comprobante.gestion_comprobantes.model.Cliente;
 import com.inmobiliaria.comprobante.gestion_comprobantes.service.ClienteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -17,22 +21,31 @@ public class ClienteController {
     private final ClienteService clienteService;
 
     @GetMapping
-    public String listarClientes(@RequestParam(required = false) String buscar,
-                                 Model model) {
+    public String listarClientes(Model model,
+                                 @RequestParam(name = "page", defaultValue = "0") int page,
+                                 @RequestParam(name = "buscar", required = false) String buscar) {
 
-        List<Cliente> clientes;
+        Pageable pageable = PageRequest.of(page, 10); // Probando con 2
+        Page<Cliente> paginaClientes = clienteService.listarTodospaginable(buscar, pageable);
 
-        if (buscar != null && !buscar.isBlank()) {
-            clientes = clienteService.buscarPorNombre(buscar);
-        } else {
-            clientes = clienteService.listarTodos();
-        }
-
-        model.addAttribute("clientes", clientes);
+        model.addAttribute("clientes", paginaClientes);
         model.addAttribute("buscar", buscar);
 
         return "clientes";
     }
+
+    @PostMapping("/{id}/inactivar")
+    public String inactivar(@PathVariable("id") Long id) {
+        clienteService.inactivar(id);
+        return "redirect:/clientes";
+    }
+
+    @PostMapping("/{id}/activar")
+    public String activar(@PathVariable Long id) {
+        clienteService.activar(id);
+        return "redirect:/clientes";
+    }
+
 
     @GetMapping("/nuevo")
     public String nuevoCliente(Model model) {
@@ -41,8 +54,23 @@ public class ClienteController {
     }
 
     @PostMapping
-    public String guardarCliente(@ModelAttribute Cliente cliente) {
-        clienteService.guardar(cliente);
+    public String guardarCliente(
+            @Valid @ModelAttribute Cliente cliente,
+            BindingResult result,
+            Model model) {
+
+        if (result.hasErrors()) {
+            return "clientes-form"; // vuelve al form con errores
+        }
+
+        try {
+            clienteService.guardar(cliente);
+        } catch (Exception e) {
+            model.addAttribute("errorGlobal", "El DNI ya existe");
+            return "clientes-form";
+        }
+
         return "redirect:/clientes";
     }
 }
+

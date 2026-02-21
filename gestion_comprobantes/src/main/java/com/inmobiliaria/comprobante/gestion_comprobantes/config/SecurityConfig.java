@@ -11,20 +11,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**") // Más simple, sin 'new AntPath...'
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**").permitAll()
-                        .anyRequest().authenticated()
-                );
-        http
+                        .requestMatchers("/h2-console/**").permitAll() // Acceso libre a H2
+                        .requestMatchers("/login", "/css/**", "/js/**").permitAll() // Recursos estáticos libres
+                        .anyRequest().authenticated() // Todo lo demás requiere login
+                )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin()) // Para que H2 cargue sus frames
+                )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
