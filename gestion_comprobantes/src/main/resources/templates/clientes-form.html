@@ -26,8 +26,10 @@
             </h1>
             <p class="text-slate-500 text-sm mt-1">Registra los datos de contacto y define su rol en el sistema.</p>
         </div>
-        <a th:href="@{/clientes}" class="group flex items-center text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors">
-            <span class="mr-2 transition-transform group-hover:-translate-x-1">←</span> Volver al listado
+        <a th:href="${origen == 'tasacion' ? '/tasacion/nueva' : '/clientes'}"
+           class="group flex items-center text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors">
+            <span class="mr-2 transition-transform group-hover:-translate-x-1">←</span>
+            <span th:text="${origen == 'tasacion' ? 'Volver a Tasación' : 'Volver al listado'}"></span>
         </a>
     </div>
 
@@ -39,6 +41,7 @@
 
         <input type="hidden" th:field="*{id}" />
         <input type="hidden" th:field="*{activo}" />
+        <input type="hidden" name="origen" th:value="${origen}" />
 
         <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8 form-section">
             <h2 class="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-6 flex items-center">

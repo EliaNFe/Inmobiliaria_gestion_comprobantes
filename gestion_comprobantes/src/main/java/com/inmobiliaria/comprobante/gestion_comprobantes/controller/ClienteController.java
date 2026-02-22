@@ -66,8 +66,10 @@ public class ClienteController {
     }
 
     @GetMapping("/nuevo")
-    public String nuevoCliente(Model model) {
+    public String formularioNuevoCliente(@RequestParam(value = "origen", required = false) String origen, Model model) {
         model.addAttribute("cliente", new Cliente());
+        model.addAttribute("origen", origen != null ? origen : "");
+
         return "clientes-form";
     }
 
@@ -75,17 +77,25 @@ public class ClienteController {
     public String guardarCliente(
             @Valid @ModelAttribute Cliente cliente,
             BindingResult result,
+            @RequestParam(value = "origen", required = false) String origen,
             Model model) {
 
         if (result.hasErrors()) {
-            return "clientes-form"; // vuelve al form con errores
+            model.addAttribute("origen", origen);
+            return "clientes-form";
         }
 
         try {
             clienteService.guardar(cliente);
         } catch (Exception e) {
+            model.addAttribute("origen", origen);
             model.addAttribute("errorGlobal", "El DNI ya existe");
             return "clientes-form";
+        }
+
+        // REDIRECCIÓN INTELIGENTE
+        if ("tasacion".equals(origen)) {
+            return "redirect:/tasacion/nueva";
         }
 
         return "redirect:/clientes";

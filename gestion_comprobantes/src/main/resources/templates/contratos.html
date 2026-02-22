@@ -91,8 +91,13 @@
                                class="p-2.5 bg-slate-50 text-slate-400 hover:text-blue-600 rounded-xl border border-slate-100">
                                 ⚙️
                             </a>
+
                             <form th:if="${c.activo}" th:action="@{/contratos/{id}/inactivar(id=${c.id})}" method="post" class="inline">
-                                <button type="submit" class="p-2.5 text-amber-600 hover:bg-amber-50 rounded-xl">🚫</button>
+                                <button type="submit" class="p-2.5 text-amber-600 hover:bg-amber-50 rounded-xl" title="Finalizar Contrato">🚫</button>
+                            </form>
+
+                            <form th:unless="${c.activo}" th:action="@{/contratos/{id}/activar(id=${c.id})}" method="post" class="inline">
+                                <button type="submit" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-xl" title="Reactivar Contrato">✅</button>
                             </form>
 
                             <button th:if="${c.activo}"

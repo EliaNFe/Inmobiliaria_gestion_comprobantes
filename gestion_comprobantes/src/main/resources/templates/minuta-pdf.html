@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        @page { size: A4; margin: 0; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.2; padding: 20px; background-color: white; }
+
+        /* Estilos del nuevo encabezado */
+        .brand-container { width: 100%; margin-bottom: 20px; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; }
+        .brand-logo { width: 150px; float: left; }
+        .brand-text { float: right; text-align: right; color: #1e3a8a; }
+        .brand-title { font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase; }
+        .brand-subtitle { font-size: 12px; margin: 0; color: #4b5563; }
+        .clear { clear: both; }
+
+        .header { text-align: center; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .title { border: 2px solid black; display: inline-block; padding: 5px 20px; margin: 10px 0; font-size: 14px; background-color: #f3f4f6; }
+        .section-box { border: 1px solid black; margin-bottom: 12px; position: relative; padding: 12px 8px 8px 8px; }
+        .section-label { position: absolute; top: -8px; left: 10px; font-weight: bold; font-size: 9px; background: white; padding: 0 5px; border: 1px solid black; }
+
+        .table-full { width: 100%; border-collapse: collapse; }
+        .label { font-weight: normal; white-space: nowrap; }
+        .value { border-bottom: 1px dotted black; padding-left: 5px; font-weight: bold; width: 100%; }
+
+        .croquis-box { border: 1px solid black; height: 150px; margin-top: 10px; text-align: center; line-height: 150px; color: #ccc; }
+    </style>
+</head>
+<body>
+
+<div style="max-width: 750px; margin: auto;">
+
+    <div class="brand-container">
+        <div class="brand-logo">
+            <img src="static/img/logo.png" th:src="@{classpath:/static/img/logo.png}" width="140" alt="LOGO"/>
+        </div>
+        <div class="brand-text">
+            <p class="brand-title">Liliana Cirigliano</p>
+            <p class="brand-subtitle">Negocios Inmobiliarios</p>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="header">
+        <div class="title">MINUTA DE TASACIÓN PROFESIONAL</div>
+        <div style="text-align: right; font-size: 10px; margin-bottom: 5px;">
+            FECHA: <span style="border-bottom: 1px solid black; padding: 0 20px;" th:text="${tasacion.fechaCreacion != null ? #temporals.format(tasacion.fechaCreacion, 'dd/MM/yyyy') : ''}"></span>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <div class="section-label">SOLICITANTE</div>
+        <table class="table-full">
+            <tr>
+                <td class="label">Nombres y Apellidos:</td>
+                <td class="value" th:text="${tasacion.cliente != null ? tasacion.cliente.nombre : ''}"></td>
+            </tr>
+        </table>
+        <table class="table-full" style="margin-top: 5px;">
+            <tr>
+                <td class="label">DNI:</td>
+                <td class="value" th:text="${tasacion.cliente != null ? tasacion.cliente.dni : ''}"></td>
+                <td class="label" style="padding-left: 15px;">Carácter:</td>
+                <td class="value" th:text="${tasacion.caracterSolicitante}"></td>
+            </tr>
+        </table>
+        <table class="table-full" style="margin-top: 5px;">
+            <tr>
+                <td class="label">Domicilio:</td>
+                <td class="value" th:text="${tasacion.domicilioSolicitante}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section-box">
+        <div class="section-label">UBICACIÓN DEL INMUEBLE A TASAR</div>
+        <table class="table-full">
+            <tr>
+                <td class="label">Localidad:</td>
+                <td class="value" th:text="${tasacion.localidad}"></td>
+                <td class="label" style="padding-left: 15px;">Partido:</td>
+                <td class="value" th:text="${tasacion.partido}"></td>
+            </tr>
+        </table>
+        <table class="table-full" style="margin-top: 5px;">
+            <tr>
+                <td class="label">Calle y N°:</td>
+                <td class="value" th:text="${tasacion.calleNumero}"></td>
+            </tr>
+        </table>
+        <table class="table-full" style="margin-top: 5px;">
+            <tr>
+                <td class="label">entre las de:</td>
+                <td class="value" th:text="${tasacion.entreCalles}"></td>
+            </tr>
+        </table>
+        <div class="croquis-box">Espacio para Croquis o Vista Satelital</div>
+    </div>
+
+    <table class="table-full" style="margin-bottom: 10px;">
+        <tr>
+            <td style="width: 50%; vertical-align: top; padding-right: 5px;">
+                <div class="section-box">
+                    <div class="section-label">IDENTIFICACIÓN</div>
+                    <div style="margin-bottom: 4px;">Nomenclatura: <span class="value" style="display:inline-block; width: 60%;" th:text="${tasacion.nomenclaturaCatastral}"></span></div>
+                    <div style="margin-bottom: 4px;">Partida: <span class="value" style="display:inline-block; width: 75%;" th:text="${tasacion.partida}"></span></div>
+                    <div style="margin-bottom: 4px;">Matrícula: <span class="value" style="display:inline-block; width: 70%;" th:text="${tasacion.matricula}"></span></div>
+                </div>
+            </td>
+            <td style="width: 50%; vertical-align: top; padding-left: 5px;">
+                <div class="section-box">
+                    <div class="section-label">MEDIDAS Y SUPERFICIE</div>
+                    <div style="margin-bottom: 4px;">Sup. Cubierta: <span class="value" style="display:inline-block; width: 60%;" th:text="${tasacion.superficieCubierta + ' m2'}"></span></div>
+                    <div style="margin-bottom: 4px;">FOS: <span class="value" style="display:inline-block; width: 20%;" th:text="${tasacion.fos}"></span> FOT: <span class="value" style="display:inline-block; width: 20%;" th:text="${tasacion.fot}"></span></div>
+                    <div style="margin-bottom: 4px;">Sup Semicub: <span class="value" style="display:inline-block; width: 65%;" th:text="${tasacion.superficieSemicubierta + ' m2'}"></span></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="border: 2px solid black; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; background-color: #f9fafb;">
+        VALOR DE MERCADO ESTIMADO: <span style="margin-left: 20px; font-size: 18px; color: #1e3a8a;" th:text="${tasacion.valorMercado != null ? '$ ' + #numbers.formatDecimal(tasacion.valorMercado, 1, 'POINT', 2, 'COMMA') : '$ 0,00'}"></span>
+    </div>
+
+    <div class="section-box" style="min-height: 120px;">
+        <div class="section-label">DESCRIPCIÓN - COMENTARIOS TÉCNICOS</div>
+        <div style="font-size: 10px; white-space: pre-wrap;" th:text="${tasacion.observaciones}"></div>
+    </div>
+
+    <table class="table-full" style="margin-top: 60px; text-align: center;">
+        <tr>
+            <td style="width: 50%; border-top: 1px solid black; padding-top: 5px;">Firma y Sello del Profesional</td>
+            <td style="width: 50%; border-top: 1px solid black; padding-top: 5px;">Firma del Solicitante</td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
