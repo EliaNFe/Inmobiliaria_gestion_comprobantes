@@ -24,8 +24,8 @@ public class TasacionDTO {
     private String titular;
     private String partida;
     private String matricula;
-    private String tipoInmueble; // Vivienda familiar, Destino comercial, etc.
-    private String tipoInmuebleDetalle; // Para el campo "Otros"
+    private String tipoInmueble;
+    private String tipoInmuebleDetalle;
     private String medidasLote;
     private String superficieCubierta;
     private String superficieSemicubierta;
@@ -35,6 +35,4 @@ public class TasacionDTO {
     private String densidad;
     private Double valorMercado;
     private String observaciones;
-    private String cuitProfesional;
-    private String telefonoProfesional;
 }

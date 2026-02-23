@@ -1,9 +1,12 @@
 package com.inmobiliaria.comprobante.gestion_comprobantes.controller;
 
+import com.inmobiliaria.comprobante.gestion_comprobantes.model.Comprobante;
 import com.inmobiliaria.comprobante.gestion_comprobantes.model.Contrato;
+import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ComprobanteRepository;
 import com.inmobiliaria.comprobante.gestion_comprobantes.service.ClienteService;
 import com.inmobiliaria.comprobante.gestion_comprobantes.service.ContratoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +22,15 @@ public class ContratoController {
 
     private final ContratoService contratoService;
     private final ClienteService clienteService;
+    private final ComprobanteRepository comprobanteRepository;
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("contratos", contratoService.listarTodos());
+    public String listar(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Contrato> paginaContratos = contratoService.listarPaginados(page);
+
+        model.addAttribute("contratos", paginaContratos.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paginaContratos.getTotalPages());
         return "contratos";
     }
 
@@ -59,7 +67,6 @@ public class ContratoController {
     @PostMapping
     public String guardar(@ModelAttribute("contrato") Contrato contrato, Model model) {
         try {
-            // VALIDACION: Evitar que el propietario sea la misma persona que el inquilino
             if (contrato.getPropietario() != null && contrato.getCliente() != null) {
                 Long idPropietario = contrato.getPropietario().getId();
                 Long idInquilino = contrato.getCliente().getId();
@@ -75,7 +82,7 @@ public class ContratoController {
             if (contrato.getId() != null) {
                 Contrato contratoDB = contratoService.buscarPorId(contrato.getId());
 
-                // Actualización de campos básicos
+
                 if (contrato.getPropiedad() != null && !contrato.getPropiedad().isBlank()) {
                     contratoDB.setPropiedad(contrato.getPropiedad());
                 }
@@ -145,6 +152,14 @@ public class ContratoController {
         model.addAttribute("fechaHoy", LocalDate.now());
         model.addAttribute("nota", "");
 
+        Comprobante c = new Comprobante();
+        c.setContrato(contrato);
+        c.setNombreInquilino(contrato.getCliente().getNombre());
+        c.setPropiedadDireccion(contrato.getPropiedad());
+        c.setMontoAbonado(contrato.getMontoMensual());
+        c.setPeriodoCorrespondiente("Mes actual - " + LocalDate.now().getMonth());
+
+        comprobanteRepository.save(c);
         return "contrato-recibo";
     }
 
@@ -157,8 +172,19 @@ public class ContratoController {
             Model model) {
 
         Contrato contrato = contratoService.buscarPorId(id);
-
         BigDecimal total = contrato.getMontoMensual().add(luz).add(gas);
+
+        Comprobante c = new Comprobante();
+        c.setContrato(contrato);
+        c.setNombreInquilino(contrato.getCliente().getNombre());
+        c.setPropiedadDireccion(contrato.getPropiedad());
+        c.setMontoAbonado(total);
+
+        String periodo = (nota != null && !nota.isBlank()) ? nota :
+                "Mes " + LocalDate.now().getMonthValue() + " / " + LocalDate.now().getYear();
+        c.setPeriodoCorrespondiente(periodo);
+
+        comprobanteRepository.save(c);
 
         model.addAttribute("contrato", contrato);
         model.addAttribute("luz", luz);

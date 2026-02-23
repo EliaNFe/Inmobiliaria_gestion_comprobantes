@@ -113,10 +113,21 @@
                     <div style="margin-bottom: 4px;">Sup. Cubierta: <span class="value" style="display:inline-block; width: 60%;" th:text="${tasacion.superficieCubierta + ' m2'}"></span></div>
                     <div style="margin-bottom: 4px;">FOS: <span class="value" style="display:inline-block; width: 20%;" th:text="${tasacion.fos}"></span> FOT: <span class="value" style="display:inline-block; width: 20%;" th:text="${tasacion.fot}"></span></div>
                     <div style="margin-bottom: 4px;">Sup Semicub: <span class="value" style="display:inline-block; width: 65%;" th:text="${tasacion.superficieSemicubierta + ' m2'}"></span></div>
+                    <div style="margin-bottom: 4px;">Tipo: <span class="value" style="display:inline-block; width: 80%;" th:text="${tasacion.tipoInmueble}"></span></div>
+                    <div style="margin-bottom: 4px;">Densidad: <span class="value" style="display:inline-block; width: 70%;" th:text="${tasacion.densidad}"></span></div>
                 </div>
             </td>
         </tr>
     </table>
+
+    <div class="section-box" th:if="${tasacion.tipoInmuebleDetalle != null and !tasacion.tipoInmuebleDetalle.isEmpty()}">
+        <div class="section-label">DETALLE TIPO DE INMUEBLE</div>
+        <table class="table-full">
+            <tr>
+                <td class="value" th:text="${tasacion.tipoInmuebleDetalle}"></td>
+            </tr>
+        </table>
+    </div>
 
     <div style="border: 2px solid black; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; background-color: #f9fafb;">
         VALOR DE MERCADO ESTIMADO: <span style="margin-left: 20px; font-size: 18px; color: #1e3a8a;" th:text="${tasacion.valorMercado != null ? '$ ' + #numbers.formatDecimal(tasacion.valorMercado, 1, 'POINT', 2, 'COMMA') : '$ 0,00'}"></span>

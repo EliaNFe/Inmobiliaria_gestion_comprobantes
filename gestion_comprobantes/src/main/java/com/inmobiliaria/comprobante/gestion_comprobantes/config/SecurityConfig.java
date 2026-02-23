@@ -11,29 +11,41 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomSuccessHandler successHandler) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**") // Más simple, sin 'new AntPath...'
+                        .ignoringRequestMatchers("/h2-console/**")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll() // Acceso libre a H2
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll() // Recursos estáticos libres
-                        .anyRequest().authenticated() // Todo lo demás requiere login
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+
+                        // --- RESTRICCIONES POR ROL ---
+                        // Solo el admin entra a la gestión de usuarios y base de datos
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // Empleados y Admin pueden ver clientes y generar recibos
+                        .requestMatchers("/empleado/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/clientes/**", "/contratos/**").hasAnyRole("ADMIN", "EMPLEADO")
+
+                        .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()) // Para que H2 cargue sus frames
+                        .frameOptions(frame -> frame.sameOrigin())
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                        // Usamos el successHandler en lugar de defaultSuccessUrl
+                        .successHandler(successHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -44,20 +56,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 👤 Usuario en memoria (simple para tu mamá)
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        UserDetails user = User.builder()
+        UserDetails admin = User.builder()
                 .username("admin")
                 .password(encoder.encode("lili123"))
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
-    }
+        UserDetails empleado = User.builder()
+                .username("empleado")
+                .password(encoder.encode("emp123"))
+                .roles("EMPLEADO")
+                .build();
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new InMemoryUserDetailsManager(admin, empleado);
     }
 }

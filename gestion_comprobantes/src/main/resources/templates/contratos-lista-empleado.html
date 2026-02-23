@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InmoDoc | Listado de Contratos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item:hover { background-color: rgba(249, 115, 22, 0.05); color: #ea580c; }
+        .sidebar-active { background-color: #fff7ed; color: #ea580c; box-shadow: inset 4px 0 0 #ea580c; }
+        .table-row:hover { background-color: #fffaf5; }
+        dialog::backdrop {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+
+<body class="bg-[#F9FAFB] min-h-screen flex">
+
+<aside class="w-72 bg-white border-r border-slate-200 hidden lg:flex flex-col sticky top-0 h-screen">
+    <div class="p-8">
+        <h1 class="text-2xl font-black text-slate-800 tracking-tighter">
+            Lily<span class="text-orange-600">Cirigliano</span>
+        </h1>
+        <p class="text-[10px] text-orange-500 font-bold uppercase tracking-widest mt-1">Gestión Inmobiliaria</p>
+    </div>
+
+    <nav class="flex-1 px-4 space-y-1.5">
+        <a th:href="@{/dashboard}" class="sidebar-item flex items-center px-4 py-3.5 text-slate-500 rounded-xl font-semibold transition-all">
+            <span class="mr-3 text-xl">🏠</span> Inicio
+        </a>
+        <a th:href="@{/clientes}" class="sidebar-item flex items-center px-4 py-3.5 text-slate-500 rounded-xl font-semibold transition-all">
+            <span class="mr-3 text-xl">👥</span> Clientes
+        </a>
+        <a th:href="@{/empleado/contratos}" class="flex items-center px-4 py-3.5 sidebar-active rounded-xl font-bold transition-all">
+            <span class="mr-3 text-xl">📄</span> Contratos
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-slate-100">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="flex items-center justify-center w-full px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all border border-transparent hover:border-red-100">
+                <span class="mr-2">🚪</span> Salir
+            </button>
+        </form>
+    </div>
+</aside>
+
+<main class="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full">
+
+    <header class="flex justify-between items-end mb-10">
+        <div>
+            <nav class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Operaciones > Contratos</nav>
+            <h2 class="text-4xl font-black text-slate-900 tracking-tight">Listado de Contratos</h2>
+            <p class="text-slate-500 mt-2 font-medium">Consulta de alquileres y generación de recibos.</p>
+        </div>
+        <div class="hidden md:block">
+             <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-4 py-2 rounded-full"
+                   th:text="'Total: ' + ${totalItems ?: 0} + ' contratos'"></span>
+        </div>
+    </header>
+
+    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Inquilino</th>
+                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Propiedad</th>
+                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Monto Alquiler</th>
+                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Acción</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+
+                <tr th:each="c : ${contratos}" class="table-row transition-colors group" th:classappend="${!c.activo} ? 'opacity-50' : ''">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-sm mr-4"
+                                 th:text="${c.cliente != null ? #strings.substring(c.cliente.nombre,0,1) : '?' }"></div>
+                            <div>
+                                <span class="font-bold text-slate-700 block" th:text="${c.cliente?.nombre}">Inquilino</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase" th:text="'Dueño: ' + ${c.propietario?.nombre}">Dueño</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="text-slate-500 font-medium" th:text="${c.propiedad}">Dirección</span>
+                        <div th:if="${!c.activo}" class="text-[9px] font-black text-red-400 uppercase mt-1">Contrato Finalizado</div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="text-slate-900 font-black text-lg" th:text="'$' + ${#numbers.formatDecimal(c.montoMensual, 0, 'POINT', 0, 'COMMA')}">0</span>
+                    </td>
+                    <td class="px-8 py-6 text-center">
+                        <button th:if="${c.activo}"
+                                th:onclick="'document.getElementById(\'modalRecibo' + ${c.id} + '\').showModal()'"
+                                class="inline-flex items-center px-6 py-2.5 bg-orange-600 text-white text-xs font-bold rounded-xl hover:bg-orange-700 transition-all shadow-md shadow-orange-100 active:scale-95">
+                            <span class="mr-2">📜</span> Generar Recibo
+                        </button>
+                        <span th:unless="${c.activo}" class="text-slate-300 text-xs italic">Sin acciones</span>
+
+                        <dialog th:id="'modalRecibo' + ${c.id}" class="rounded-[2.5rem] shadow-2xl p-0 border-none backdrop:bg-slate-900/80 text-left">
+                            <div class="p-10 w-80 bg-white relative">
+                                <h3 class="text-2xl font-black text-orange-600 mb-2">Servicios</h3>
+                                <p class="text-slate-500 text-[10px] mb-8 italic">Carga de gastos adicionales mensuales</p>
+
+                                <form th:action="@{/contratos/{id}/generar-recibo(id=${c.id})}" method="post" target="_blank" th:onsubmit="'document.getElementById(\'modalRecibo' + ${c.id} + '\').close()'">
+                                    <div class="space-y-4 mb-8">
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 ml-1">Luz ($)</label>
+                                            <input type="number" name="luz" step="0.01" value="0.00" required
+                                                   class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 outline-none focus:border-orange-500 font-bold">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 ml-1">Gas ($)</label>
+                                            <input type="number" name="gas" step="0.01" value="0.00" required
+                                                   class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 outline-none focus:border-orange-500 font-bold">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1 ml-1">Nota / Periodo</label>
+                                            <textarea name="nota" rows="2" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 outline-none focus:border-orange-500 text-sm" placeholder="Ej: Marzo 2026"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-3">
+                                        <button type="submit" class="w-full bg-orange-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-100 hover:bg-orange-700 transition-all">
+                                            Confirmar e Imprimir
+                                        </button>
+                                        <button type="button" th:onclick="'document.getElementById(\'modalRecibo' + ${c.id} + '\').close()'"
+                                                class="w-full text-slate-400 font-bold py-2 text-sm">
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </dialog>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(contratos)}">
+                    <td colspan="4" class="px-8 py-12 text-center text-slate-400 font-medium italic">
+                        No hay contratos disponibles para mostrar.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-8 bg-slate-50/50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-slate-500 font-medium">
+                Página <span class="text-orange-600 font-bold" th:text="${currentPage + 1}">1</span>
+                de <span class="text-slate-800 font-bold" th:text="${totalPages ?: 1}">1</span>
+            </p>
+
+            <div th:if="${totalPages > 1}" class="flex items-center space-x-1">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/empleado/contratos(page=${currentPage - 1})}"
+                   class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:border-orange-500 hover:text-orange-600 transition-all shadow-sm">
+                    Anterior
+                </a>
+
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{/empleado/contratos(page=${currentPage + 1})}"
+                   class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:border-orange-500 hover:text-orange-600 transition-all shadow-sm">
+                    Siguiente
+                </a>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

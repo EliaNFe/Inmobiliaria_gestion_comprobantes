@@ -3,10 +3,15 @@ package com.inmobiliaria.comprobante.gestion_comprobantes.service;
 import com.inmobiliaria.comprobante.gestion_comprobantes.model.Contrato;
 import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ContratoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -19,6 +24,27 @@ public class ContratoService {
         return contratoRepository.findAll();
     }
 
+
+    public long contarVencimientosMesActual() {
+        LocalDate inicio = LocalDate.now().withDayOfMonth(1);
+        LocalDate fin = LocalDate.now().withDayOfMonth(inicio.lengthOfMonth());
+        return contratoRepository.countByFechaFinBetweenAndActivoTrue(inicio, fin);
+    }
+
+    public long contarActualizacionesMesActual() {
+        // Lógica: Contratos donde el mes actual coincide con el intervalo de actualización
+        // O simplemente contratos activos que no se actualizaron este mes
+        return contratoRepository.findByActivoTrue().stream()
+                .filter(c -> {
+                    if (c.getFechaUltimaActualizacion() == null) return true;
+                    return c.getFechaUltimaActualizacion().plusMonths(c.getMesesActualizacion())
+                            .isBefore(LocalDate.now().plusDays(1));
+                }).count();
+    }
+
+    public Page<Contrato> listarPaginados(int page) {
+        return contratoRepository.findAll(PageRequest.of(page, 10, Sort.by("id").descending()));
+    }
 
     @Transactional
     public void cambiarEstado(Long id, boolean estado) {

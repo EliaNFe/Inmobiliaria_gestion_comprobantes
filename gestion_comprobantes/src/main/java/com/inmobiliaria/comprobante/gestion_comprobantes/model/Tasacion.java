@@ -46,7 +46,7 @@ public class Tasacion {
     private String matricula;
 
     // TIPO E INDICADORES
-    private String tipoInmueble; // vivienda, comercial, industrial, otros
+    private String tipoInmueble;
     private String tipoInmuebleDetalle;
     private String medidasLote;
     private String superficieCubierta;
@@ -56,14 +56,10 @@ public class Tasacion {
     private String fot;
     private String densidad;
 
-    // VALOR Y COMENTARIOS
+
     private Double valorMercado;
     @Column(columnDefinition = "TEXT")
     private String observaciones;
-
-    // DATOS PROFESIONAL (Podrían ser fijos o venir del usuario logueado)
-    private String cuitProfesional;
-    private String telefonoProfesional;
 
 
 }
