@@ -1,0 +1,6 @@
+Darle doble click a gestión inmobiliaria.bat esperar que se abra el navegador y listo, gestione su inmobiliaria Liliana!!
+
+cuentas admin admin123 administrador
+cuentas empleado emp123 empleados
+
+para cerrar el sistema solo busque el icono rojo en las app de segundo plano y ciérrelo :)
