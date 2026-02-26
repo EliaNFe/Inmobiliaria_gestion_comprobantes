@@ -1,8 +1,3 @@
-Para que tu mamá sepa qué está pasando mientras espera, podemos modificar el .bat para que muestre una cuenta regresiva real en la pantalla.
-
-Aquí tienes el código actualizado. He cambiado el timeout por un bucle que imprime los números uno por uno:
-
-Fragmento de código
 @echo off
 set "BASEDIR=%~dp0"
 set "JAVA_PATH=%BASEDIR%java21\bin\javaw.exe"
@@ -20,7 +15,7 @@ echo ========================================
 echo.
 
 :: 3. Cuenta regresiva manual
-set /a count=8
+set /a count=10
 :loop
 if %count%==0 goto open
 echo El sistema se abre en %count%...

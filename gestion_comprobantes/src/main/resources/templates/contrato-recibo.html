@@ -1,107 +1,117 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-
     <meta charset="UTF-8">
-    <title>Recibo de Alquiler - Liliana Cirigliano Inmobiliaria</title>
+    <title>Recibo Compacto - InmoDoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Configuramos que NO se impriman los elementos con clase no-print */
         @media print {
-            .no-print { display: none; }
-            body { background-color: white; padding: 0; }
-            .print-border { border: 2px solid #000; }
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: white !important;
+                padding: 10mm !important;
+            }
+            .receipt-container {
+                border: 1px solid #000 !important;
+                width: 12cm !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
         }
+        /* Para que en pantalla se vea centrado y lindo */
+        .no-print { display: flex; }
     </style>
 </head>
-<body class="bg-slate-100 p-4 md:p-8 font-serif">
+<body class="bg-slate-100 p-2">
 
-<div class="no-print max-w-2xl mx-auto mb-6 flex justify-between items-center">
-    <a th:href="@{/contratos/{id}(id=${contrato.id})}" class="text-slate-500 font-bold hover:text-blue-600">← Volver al Contrato</a>
-    <button onclick="window.print()" class="no-print bg-slate-900 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-black transition-all">
-        Imprimir Comprobante
+<div class="no-print max-w-[12cm] mx-auto mb-2 flex justify-between items-center px-1">
+    <a th:href="@{/contratos/{id}(id=${contrato.id})}"
+       class="text-[10px] font-bold text-slate-500 hover:text-orange-600 transition-colors uppercase">
+        ← Volver al Contrato
+    </a>
+    <button onclick="window.print()"
+            class="bg-orange-600 text-white px-4 py-1 rounded shadow-md text-[10px] font-bold hover:bg-orange-700 transition-all">
+        IMPRIMIR RECIBO
     </button>
 </div>
 
-<div class="max-w-2xl mx-auto bg-white p-10 print-border shadow-sm rounded-sm border border-slate-200">
+<div class="receipt-container mx-auto bg-white p-5 border border-slate-300 w-[12cm] shadow-sm">
 
-    <div class="flex justify-between items-start border-b-4 border-slate-900 pb-6 mb-6">
+    <div class="flex justify-between items-start border-b-2 border-orange-600 pb-2 mb-3">
         <div>
-            <h1 class="text-2xl font-black uppercase tracking-tighter">Liliana Cirigliano</h1>
-            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-[0.2em]">Inmobiliaria • Gestión de Alquileres</p>
+            <h1 class="text-sm font-black uppercase leading-none text-slate-900">Liliana Cirigliano</h1>
+            <p class="text-[8px] text-orange-600 font-bold tracking-widest">INMOBILIARIA</p>
         </div>
-        <div class="text-right">
-            <div class="bg-slate-900 text-white px-4 py-1 inline-block mb-2 font-bold text-sm">RECIBO</div>
-            <p class="text-slate-500 font-mono text-xs uppercase">N° R-<span th:text="${contrato.id}"></span>-<span th:text="${#temporals.month(fechaHoy)}"></span></p>
-            <p class="text-sm font-bold" th:text="${#temporals.format(fechaHoy, 'dd/MM/yyyy')}">21/02/2026</p>
-        </div>
-    </div>
-
-    <div class="space-y-4">
-        <div class="border-b border-slate-100 pb-4">
-            <p class="text-xs text-slate-400 uppercase font-bold mb-1">Recibimos de:</p>
-            <p class="text-lg font-bold" th:text="${contrato.cliente.nombre}"></p>
-        </div>
-
-        <table class="w-full text-left mt-6">
-            <thead>
-            <tr class="border-b-2 border-slate-900">
-                <th class="py-2 text-xs uppercase font-bold">Concepto / Descripción</th>
-                <th class="py-2 text-right text-xs uppercase font-bold text-slate-400">Importe</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-            <tr>
-                <td class="py-4">
-                    <span class="block font-bold text-slate-800">Alquiler Mensual</span>
-                    <span class="text-xs text-slate-500 italic" th:text="${contrato.propiedad}"></span>
-                </td>
-                <td class="py-4 text-right font-mono" th:text="'$ ' + ${#numbers.formatDecimal(contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
-            </tr>
-            <tr th:if="${luz != null && luz > 0}">
-                <td class="py-3 text-sm text-slate-600">Servicio de Energía Eléctrica (Luz)</td>
-                <td class="py-3 text-right font-mono text-sm" th:text="'$ ' + ${#numbers.formatDecimal(luz, 1, 'POINT', 2, 'COMMA')}"></td>
-            </tr>
-            <tr th:if="${gas != null && gas > 0}">
-                <td class="py-3 text-sm text-slate-600">Servicio de Gas Natural</td>
-                <td class="py-3 text-right font-mono text-sm" th:text="'$ ' + ${#numbers.formatDecimal(gas, 1, 'POINT', 2, 'COMMA')}"></td>
-            </tr>
-            </tbody>
-            <tfoot>
-            <tr class="border-t-2 border-slate-900 bg-slate-50">
-                <td class="py-4 px-2 font-black uppercase text-sm">Total Recibido</td>
-                <td class="py-4 px-2 text-right text-xl font-black" th:text="'$ ' + ${#numbers.formatDecimal(total ?: contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
-            </tr>
-            </tfoot>
-        </table>
-
-        <div th:if="${nota != null && !nota.isEmpty()}" class="mt-6 p-4 bg-slate-50 border-l-2 border-slate-300">
-            <p class="text-[10px] font-bold uppercase text-slate-400 mb-1">Observaciones:</p>
-            <p class="text-xs italic text-slate-600" th:text="${nota}"></p>
+        <div class="text-right leading-none">
+            <span class="text-[9px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded-sm uppercase">Recibo Oficial</span>
+            <p class="text-[8px] text-slate-500 mt-1">N° R-<span th:text="${contrato.id}"></span>-<span th:text="${#temporals.month(fechaHoy)}"></span></p>
+            <p class="text-[9px] font-bold mt-0.5" th:text="${#temporals.format(fechaHoy, 'dd/MM/yyyy')}"></p>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-12 mt-16">
-        <div class="text-center">
-            <div class="border-t border-slate-300 pt-2">
-                <p class="text-[10px] font-bold uppercase">Firma Inmobiliaria</p>
-                <p class="text-[9px] text-slate-400 italic">Sello y Aclaración</p>
-            </div>
+    <div class="mb-3">
+        <p class="text-[7px] text-slate-400 uppercase font-black">Locatario / Inquilino:</p>
+        <p class="text-xs font-bold text-slate-800" th:text="${contrato.cliente.nombre}"></p>
+    </div>
+
+    <table class="w-full mb-3">
+        <thead>
+        <tr class="border-b border-slate-200">
+            <th class="text-left text-[7px] py-1 text-slate-400 uppercase font-black">Concepto detallado</th>
+            <th class="text-right text-[7px] py-1 text-slate-400 uppercase font-black">Subtotal</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+        <tr>
+            <td class="py-2">
+                <span class="text-[10px] font-bold block text-slate-700">Alquiler Mensual</span>
+                <span class="text-[8px] text-slate-400 italic" th:text="${contrato.propiedad}"></span>
+            </td>
+            <td class="text-right text-xs font-mono font-bold" th:text="'$ ' + ${#numbers.formatDecimal(contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        <tr th:if="${luz != null && luz > 0}">
+            <td class="py-1 text-[9px] text-slate-600">Servicio Energía Eléctrica (Luz)</td>
+            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(luz, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        <tr th:if="${gas != null && gas > 0}">
+            <td class="py-1 text-[9px] text-slate-600">Servicio Gas Natural</td>
+            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(gas, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr class="border-t-2 border-slate-900 bg-orange-50">
+            <td class="py-2 px-1 text-[9px] font-black uppercase text-orange-900">Total Percibido</td>
+            <td class="py-2 px-1 text-right text-sm font-black text-orange-900"
+                th:text="'$ ' + ${#numbers.formatDecimal(total ?: contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div th:if="${nota != null && !nota.isEmpty()}" class="mb-4 border-l-2 border-orange-200 pl-2">
+        <p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Observaciones:</p>
+        <p class="text-[9px] italic text-slate-600 leading-tight" th:text="${nota}"></p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="border-t border-slate-300 pt-1 text-center">
+            <p class="text-[8px] font-bold uppercase text-slate-800">Liliana Cirigliano</p>
+            <p class="text-[6px] text-slate-400 uppercase">Firma y Sello</p>
         </div>
-        <div class="text-center">
-            <div class="border-t border-slate-300 pt-2">
-                <p class="text-[10px] font-bold uppercase">Firma del Inquilino</p>
-                <p class="text-[9px] text-slate-400 italic" th:text="${contrato.cliente.nombre}"></p>
-            </div>
+        <div class="border-t border-slate-300 pt-1 text-center">
+            <p class="text-[8px] font-bold uppercase text-slate-800" th:text="${contrato.cliente.nombre}"></p>
+            <p class="text-[6px] text-slate-400 uppercase">Firma Inquilino</p>
         </div>
     </div>
 
-    <div class="mt-12 pt-6 border-t border-dashed border-slate-200 text-[9px] text-slate-400 text-center uppercase tracking-[0.3em]">
-        Comprobante Interno de Pago • Liliana Cirigliano Inmobiliaria
+    <div class="mt-4 pt-2 border-t border-dashed border-slate-100">
+        <p class="text-[6px] text-slate-300 text-center tracking-[0.2em] uppercase">
+            Documento no válido como factura • Sistema InmoDoc
+        </p>
     </div>
 </div>
 
-<script>
-
-</script>
 </body>
 </html>

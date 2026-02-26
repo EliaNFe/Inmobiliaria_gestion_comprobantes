@@ -25,7 +25,11 @@ public class Contrato {
 
     @NotNull(message = "El monto es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "Monto inválido")
+
     private BigDecimal montoMensual;
+    @NotNull(message = "El monto es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Monto inválido")
+    private BigDecimal montoDeposito;
 
     @NotBlank(message = "La propiedad es obligatoria")
     private String propiedad;

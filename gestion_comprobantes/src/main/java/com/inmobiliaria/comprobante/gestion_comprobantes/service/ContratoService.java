@@ -32,8 +32,6 @@ public class ContratoService {
     }
 
     public long contarActualizacionesMesActual() {
-        // Lógica: Contratos donde el mes actual coincide con el intervalo de actualización
-        // O simplemente contratos activos que no se actualizaron este mes
         return contratoRepository.findByActivoTrue().stream()
                 .filter(c -> {
                     if (c.getFechaUltimaActualizacion() == null) return true;
@@ -59,6 +57,10 @@ public class ContratoService {
 
         if (contrato.getMontoMensual() == null || contrato.getMontoMensual().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El monto mensual debe ser mayor a cero.");
+        }
+
+        if (contrato.getMontoDeposito() == null || contrato.getMontoDeposito().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El Deposito debe ser mayor a cero.");
         }
 
 

@@ -89,6 +89,9 @@ public class ContratoController {
                 if (contrato.getMontoMensual() != null) {
                     contratoDB.setMontoMensual(contrato.getMontoMensual());
                 }
+                if (contrato.getMontoDeposito() != null) {
+                    contratoDB.setMontoDeposito(contrato.getMontoDeposito());
+                }
                 if (contrato.getMesesActualizacion() != null) {
                     contratoDB.setMesesActualizacion(contrato.getMesesActualizacion());
                 }
@@ -128,12 +131,17 @@ public class ContratoController {
         Contrato contrato = contratoService.buscarPorId(id);
 
         BigDecimal montoActual = contrato.getMontoMensual();
+        BigDecimal montoactualDeposito = contrato.getMontoDeposito();
 
         BigDecimal incremento = montoActual.multiply(porcentaje)
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal incremento2 = montoactualDeposito.multiply(porcentaje)
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
         BigDecimal nuevoMonto = montoActual.add(incremento);
+        BigDecimal nuevoMonto2 = montoActual.add(incremento2);
 
+        contrato.setMontoDeposito(nuevoMonto2);
         contrato.setMontoMensual(nuevoMonto);
         contrato.setFechaUltimaActualizacion(LocalDate.now());
 
