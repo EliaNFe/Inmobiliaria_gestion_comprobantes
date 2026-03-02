@@ -44,6 +44,33 @@ public class ContratoService {
         return contratoRepository.findAll(PageRequest.of(page, 10, Sort.by("id").descending()));
     }
 
+    public Page<Contrato> listarPaginadosYFiltrados(int page, String buscar, Boolean activo) {
+        List<Contrato> lista = contratoRepository.findAll(Sort.by("id").descending());
+
+        if (buscar != null && !buscar.isBlank()) {
+            String b = buscar.toLowerCase();
+            lista = lista.stream()
+                    .filter(c -> c.getPropiedad().toLowerCase().contains(b) ||
+                            c.getCliente().getNombre().toLowerCase().contains(b) ||
+                            c.getPropietario().getNombre().toLowerCase().contains(b))
+                    .toList();
+        }
+
+        if (activo != null) {
+            lista = lista.stream()
+                    .filter(c -> c.isActivo() == activo)
+                    .toList();
+        }
+
+        int start = (int) PageRequest.of(page, 10).getOffset();
+        int end = Math.min((start + 10), lista.size());
+
+        List<Contrato> subLista = (start > lista.size()) ? List.of() : lista.subList(start, end);
+        return new org.springframework.data.domain.PageImpl<>(
+                subLista, PageRequest.of(page, 10), lista.size()
+        );
+    }
+
     @Transactional
     public void cambiarEstado(Long id, boolean estado) {
         Contrato c = contratoRepository.findById(id)

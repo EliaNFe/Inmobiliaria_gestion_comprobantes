@@ -25,13 +25,41 @@ public class ContratoController {
     private final ComprobanteRepository comprobanteRepository;
 
     @GetMapping
-    public String listar(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Contrato> paginaContratos = contratoService.listarPaginados(page);
+    public String listar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String buscar,
+            @RequestParam(required = false) Boolean activo,
+            Model model) {
+
+        Page<Contrato> paginaContratos = contratoService.listarPaginadosYFiltrados(page, buscar, activo);
 
         model.addAttribute("contratos", paginaContratos.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaContratos.getTotalPages());
+        model.addAttribute("buscar", buscar); // Para que el input no se vacíe al buscar
+        model.addAttribute("activo", activo); // Para mantener el select seleccionado
         return "contratos";
+    }
+
+    @PostMapping("/{id}/aviso-pago-simple")
+    public String avisoPagoSimple(
+            @PathVariable Long id,
+            @RequestParam BigDecimal luz,
+            @RequestParam BigDecimal gas,
+            @RequestParam(required = false) String nota,
+            Model model) {
+
+        Contrato contrato = contratoService.buscarPorId(id);
+        BigDecimal total = contrato.getMontoMensual().add(luz).add(gas);
+
+        model.addAttribute("contrato", contrato);
+        model.addAttribute("luz", luz);
+        model.addAttribute("gas", gas);
+        model.addAttribute("total", total);
+        model.addAttribute("nota", nota);
+        model.addAttribute("fecha", LocalDate.now());
+
+        return "aviso-pago-simple";
     }
 
     @GetMapping("/nuevo")
