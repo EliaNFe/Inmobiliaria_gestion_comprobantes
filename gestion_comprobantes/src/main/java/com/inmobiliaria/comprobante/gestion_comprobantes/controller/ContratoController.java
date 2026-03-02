@@ -137,6 +137,7 @@ public class ContratoController {
                 if (contrato.getPropietario() != null && contrato.getPropietario().getId() != null) {
                     contratoDB.setPropietario(contrato.getPropietario());
                 }
+                contratoDB.setHonorarios(contrato.getHonorarios());
 
                 contratoService.guardar(contratoDB);
             } else {

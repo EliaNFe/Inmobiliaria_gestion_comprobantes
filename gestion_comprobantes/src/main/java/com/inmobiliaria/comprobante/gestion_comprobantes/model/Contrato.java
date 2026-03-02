@@ -52,6 +52,8 @@ public class Contrato {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean activo = true;
 
+    private BigDecimal honorarios;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;

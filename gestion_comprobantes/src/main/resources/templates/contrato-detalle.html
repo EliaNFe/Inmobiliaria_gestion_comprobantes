@@ -81,6 +81,13 @@
                     <span class="font-bold text-white" th:text="${'$ ' + contrato.montoDeposito}"></span>
                 </div>
 
+                <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                    <p class="text-[10px] font-black uppercase text-orange-400">Honorarios Pactados</p>
+                    <p class="text-lg font-bold text-orange-700">
+                        <span th:text="${contrato.honorarios != null} ? '$ ' + ${#numbers.formatDecimal(contrato.honorarios, 1, 'POINT', 2, 'COMMA')} : 'No definidos'"></span>
+                    </p>
+                </div>
+
                 <div class="pt-6 border-t border-orange-500">
                     <p class="text-orange-100 text-[10px] font-bold uppercase mb-2">Próxima Actualización</p>
                     <div class="flex items-center justify-between">
