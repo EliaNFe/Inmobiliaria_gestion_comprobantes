@@ -46,15 +46,23 @@ public class ContratoController {
             @PathVariable Long id,
             @RequestParam BigDecimal luz,
             @RequestParam BigDecimal gas,
+            @RequestParam BigDecimal expensas,
+            @RequestParam BigDecimal internet,
             @RequestParam(required = false) String nota,
             Model model) {
 
         Contrato contrato = contratoService.buscarPorId(id);
-        BigDecimal total = contrato.getMontoMensual().add(luz).add(gas);
+        BigDecimal total = contrato.getMontoMensual()
+                .add(luz)
+                .add(gas)
+                .add(expensas)
+                .add(internet);
 
         model.addAttribute("contrato", contrato);
         model.addAttribute("luz", luz);
         model.addAttribute("gas", gas);
+        model.addAttribute("expensas", expensas);
+        model.addAttribute("internet", internet);
         model.addAttribute("total", total);
         model.addAttribute("nota", nota);
         model.addAttribute("fecha", LocalDate.now());
@@ -205,11 +213,15 @@ public class ContratoController {
             @PathVariable Long id,
             @RequestParam BigDecimal luz,
             @RequestParam BigDecimal gas,
+            @RequestParam BigDecimal expensas,
+            @RequestParam BigDecimal internet,
             @RequestParam(required = false) String nota,
             Model model) {
 
         Contrato contrato = contratoService.buscarPorId(id);
-        BigDecimal total = contrato.getMontoMensual().add(luz).add(gas);
+
+        BigDecimal total = contrato.getMontoMensual()
+                .add(luz).add(gas).add(expensas).add(internet);
 
         Comprobante c = new Comprobante();
         c.setContrato(contrato);
@@ -226,6 +238,8 @@ public class ContratoController {
         model.addAttribute("contrato", contrato);
         model.addAttribute("luz", luz);
         model.addAttribute("gas", gas);
+        model.addAttribute("expensas", expensas);
+        model.addAttribute("internet", internet);
         model.addAttribute("nota", nota);
         model.addAttribute("total", total);
         model.addAttribute("fechaHoy", LocalDate.now());
