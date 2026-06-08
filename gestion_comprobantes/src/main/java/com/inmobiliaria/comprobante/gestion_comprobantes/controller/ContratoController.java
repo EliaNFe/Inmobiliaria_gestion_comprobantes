@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,25 +48,30 @@ public class ContratoController {
     @PostMapping("/{id}/aviso-pago-simple")
     public String avisoPagoSimple(
             @PathVariable Long id,
-            @RequestParam BigDecimal luz,
-            @RequestParam BigDecimal gas,
-            @RequestParam BigDecimal expensas,
-            @RequestParam BigDecimal internet,
+            @RequestParam(required = false) List<String> nombreItem,
+            @RequestParam(required = false) List<BigDecimal> montoItem,
             @RequestParam(required = false) String nota,
             Model model) {
 
         Contrato contrato = contratoService.buscarPorId(id);
-        BigDecimal total = contrato.getMontoMensual()
-                .add(luz)
-                .add(gas)
-                .add(expensas)
-                .add(internet);
+
+        // Construimos el mapa de ítems y calculamos el total
+        Map<String, BigDecimal> items = new LinkedHashMap<>();
+        BigDecimal total = contrato.getMontoMensual();
+
+        if (nombreItem != null && montoItem != null) {
+            for (int i = 0; i < nombreItem.size() && i < montoItem.size(); i++) {
+                String nombre = nombreItem.get(i);
+                BigDecimal monto = montoItem.get(i);
+                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) > 0) {
+                    items.put(nombre.trim(), monto);
+                    total = total.add(monto);
+                }
+            }
+        }
 
         model.addAttribute("contrato", contrato);
-        model.addAttribute("luz", luz);
-        model.addAttribute("gas", gas);
-        model.addAttribute("expensas", expensas);
-        model.addAttribute("internet", internet);
+        model.addAttribute("items", items);
         model.addAttribute("total", total);
         model.addAttribute("nota", nota);
         model.addAttribute("fecha", LocalDate.now());
@@ -191,8 +200,7 @@ public class ContratoController {
         Contrato contrato = contratoService.buscarPorId(id);
 
         model.addAttribute("contrato", contrato);
-        model.addAttribute("luz", BigDecimal.ZERO);
-        model.addAttribute("gas", BigDecimal.ZERO);
+        model.addAttribute("items", new LinkedHashMap<>());
         model.addAttribute("total", contrato.getMontoMensual());
         model.addAttribute("fechaHoy", LocalDate.now());
         model.addAttribute("nota", "");
@@ -211,17 +219,27 @@ public class ContratoController {
     @PostMapping("/{id}/generar-recibo")
     public String generarRecibo(
             @PathVariable Long id,
-            @RequestParam BigDecimal luz,
-            @RequestParam BigDecimal gas,
-            @RequestParam BigDecimal expensas,
-            @RequestParam BigDecimal internet,
+            @RequestParam(required = false) List<String> nombreItem,
+            @RequestParam(required = false) List<BigDecimal> montoItem,
             @RequestParam(required = false) String nota,
             Model model) {
 
         Contrato contrato = contratoService.buscarPorId(id);
 
-        BigDecimal total = contrato.getMontoMensual()
-                .add(luz).add(gas).add(expensas).add(internet);
+        // Construimos el mapa de ítems y calculamos el total
+        Map<String, BigDecimal> items = new LinkedHashMap<>();
+        BigDecimal total = contrato.getMontoMensual();
+
+        if (nombreItem != null && montoItem != null) {
+            for (int i = 0; i < nombreItem.size() && i < montoItem.size(); i++) {
+                String nombre = nombreItem.get(i);
+                BigDecimal monto = montoItem.get(i);
+                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) > 0) {
+                    items.put(nombre.trim(), monto);
+                    total = total.add(monto);
+                }
+            }
+        }
 
         Comprobante c = new Comprobante();
         c.setContrato(contrato);
@@ -236,10 +254,7 @@ public class ContratoController {
         comprobanteRepository.save(c);
 
         model.addAttribute("contrato", contrato);
-        model.addAttribute("luz", luz);
-        model.addAttribute("gas", gas);
-        model.addAttribute("expensas", expensas);
-        model.addAttribute("internet", internet);
+        model.addAttribute("items", items);
         model.addAttribute("nota", nota);
         model.addAttribute("total", total);
         model.addAttribute("fechaHoy", LocalDate.now());

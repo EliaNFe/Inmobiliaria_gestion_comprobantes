@@ -25,7 +25,7 @@ public class GestionComprobantesApplication {
             SystemTray tray = SystemTray.getSystemTray();
 
             // Buscamos el recurso
-            java.net.URL imageURL = GestionComprobantesApplication.class.getResource("/static/logo.png");
+            java.net.URL imageURL = GestionComprobantesApplication.class.getResource("/static/img/logo.png");
             Image image;
 
             if (imageURL != null) {

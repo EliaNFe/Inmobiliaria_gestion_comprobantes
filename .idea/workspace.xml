@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="06893a30-09df-4f80-b96b-cf5d2ddf5571" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/data/inmobiliaria.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/data/inmobiliaria.mv.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/java/com/inmobiliaria/comprobante/gestion_comprobantes/GestionComprobantesApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/src/main/java/com/inmobiliaria/comprobante/gestion_comprobantes/GestionComprobantesApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/java/com/inmobiliaria/comprobante/gestion_comprobantes/controller/ContratoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/src/main/java/com/inmobiliaria/comprobante/gestion_comprobantes/controller/ContratoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/static/img/logo.png.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/aviso-pago-simple.html" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/aviso-pago-simple.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/contrato-detalle.html" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/contrato-detalle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/contrato-recibo.html" beforeDir="false" afterPath="$PROJECT_DIR$/gestion_comprobantes/src/main/resources/templates/contrato-recibo.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="3Eq6MNZllS2PyQbnOf6tycJogUG" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Elian/Desktop/Inmobiliaria_gestion_comprobantes"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="06893a30-09df-4f80-b96b-cf5d2ddf5571" name="Changes" comment="" />
+      <created>1780893703614</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780893703614</updated>
+    </task>
+    <servers />
+  </component>
+</project>

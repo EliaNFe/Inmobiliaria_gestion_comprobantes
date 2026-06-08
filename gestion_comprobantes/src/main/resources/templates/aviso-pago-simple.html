@@ -31,24 +31,10 @@
                 <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></span>
             </div>
 
-            <div th:if="${luz > 0}" class="flex justify-between text-sm">
-                <span class="text-slate-500 font-medium">Luz</span>
-                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(luz, 1, 'POINT', 2, 'COMMA')}"></span>
-            </div>
-
-            <div th:if="${gas > 0}" class="flex justify-between text-sm">
-                <span class="text-slate-500 font-medium">Gas</span>
-                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(gas, 1, 'POINT', 2, 'COMMA')}"></span>
-            </div>
-
-            <div th:if="${expensas > 0}" class="flex justify-between text-sm">
-                <span class="text-slate-500 font-medium">Expensas</span>
-                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(expensas, 1, 'POINT', 2, 'COMMA')}"></span>
-            </div>
-
-            <div th:if="${internet > 0}" class="flex justify-between text-sm">
-                <span class="text-slate-500 font-medium">Internet</span>
-                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(internet, 1, 'POINT', 2, 'COMMA')}"></span>
+            <!-- Ítems dinámicos -->
+            <div th:each="entry : ${items}" class="flex justify-between text-sm">
+                <span class="text-slate-500 font-medium" th:text="${entry.key}"></span>
+                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></span>
             </div>
 
             <div class="border-t border-slate-200 pt-3 flex justify-between items-center">

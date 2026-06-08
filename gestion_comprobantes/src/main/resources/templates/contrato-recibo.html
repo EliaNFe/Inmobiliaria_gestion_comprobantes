@@ -72,21 +72,10 @@
             </td>
             <td class="text-right text-xs font-mono font-bold" th:text="'$ ' + ${#numbers.formatDecimal(contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
         </tr>
-        <tr th:if="${luz != null && luz > 0}">
-            <td class="py-1 text-[9px] text-slate-600">Servicio Energía Eléctrica (Luz)</td>
-            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(luz, 1, 'POINT', 2, 'COMMA')}"></td>
-        </tr>
-        <tr th:if="${gas != null && gas > 0}">
-            <td class="py-1 text-[9px] text-slate-600">Servicio Gas Natural</td>
-            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(gas, 1, 'POINT', 2, 'COMMA')}"></td>
-        </tr>
-        <tr th:if="${expensas != null && expensas > 0}">
-            <td class="py-1 text-[9px] text-slate-600">Expensas Ordinarias</td>
-            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(expensas, 1, 'POINT', 2, 'COMMA')}"></td>
-        </tr>
-        <tr th:if="${internet != null && internet > 0}">
-            <td class="py-1 text-[9px] text-slate-600">Internet / Servicios Digitales</td>
-            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(internet, 1, 'POINT', 2, 'COMMA')}"></td>
+        <!-- Ítems dinámicos -->
+        <tr th:each="entry : ${items}">
+            <td class="py-1 text-[9px] text-slate-600" th:text="${entry.key}"></td>
+            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></td>
         </tr>
         </tbody>
         <tfoot>
