@@ -4,6 +4,7 @@ import com.inmobiliaria.comprobante.gestion_comprobantes.model.Contrato;
 import com.inmobiliaria.comprobante.gestion_comprobantes.repository.ContratoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,11 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ContratoService {
+
+    // --- Configuración de avisos del dashboard ---
+    // Con cuántos días de anticipación avisamos que un contrato está por
+    // actualizarse o por vencer. Cambiar acá afecta a todo el sistema.
+    public static final int DIAS_AVISO_ACTUALIZACION = 20;
+    public static final int DIAS_AVISO_VENCIMIENTO = 20;
+    public static final int TAMANIO_PAGINA_DASHBOARD = 10;
 
     private final ContratoRepository contratoRepository;
 
@@ -24,20 +33,50 @@ public class ContratoService {
         return contratoRepository.findAll();
     }
 
-
-    public long contarVencimientosMesActual() {
-        LocalDate inicio = LocalDate.now().withDayOfMonth(1);
-        LocalDate fin = LocalDate.now().withDayOfMonth(inicio.lengthOfMonth());
-        return contratoRepository.countByFechaFinBetweenAndActivoTrue(inicio, fin);
+    /**
+     * Fecha en la que corresponde la próxima actualización de un contrato:
+     * desde la última actualización registrada, o desde el inicio del
+     * contrato si todavía nunca se actualizó.
+     */
+    private LocalDate proximaActualizacion(Contrato c) {
+        LocalDate base = (c.getFechaUltimaActualizacion() != null)
+                ? c.getFechaUltimaActualizacion()
+                : c.getFechaInicio();
+        return base.plusMonths(c.getMesesActualizacion());
     }
 
-    public long contarActualizacionesMesActual() {
-        return contratoRepository.findByActivoTrue().stream()
-                .filter(c -> {
-                    if (c.getFechaUltimaActualizacion() == null) return true;
-                    return c.getFechaUltimaActualizacion().plusMonths(c.getMesesActualizacion())
-                            .isBefore(LocalDate.now().plusDays(1));
-                }).count();
+    /**
+     * Contratos activos cuya próxima actualización de precio ya venció o cae
+     * dentro de los próximos DIAS_AVISO_ACTUALIZACION días. Siempre paginado:
+     * como la fecha "próxima actualización" es calculada (no una columna de
+     * la base), se filtra y ordena en memoria y luego se recorta la página,
+     * igual que en listarPaginadosYFiltrados().
+     */
+    public Page<Contrato> listarProximosAActualizar(int page) {
+        LocalDate limite = LocalDate.now().plusDays(DIAS_AVISO_ACTUALIZACION);
+
+        List<Contrato> pendientes = contratoRepository.findByActivoTrue().stream()
+                .filter(c -> !proximaActualizacion(c).isAfter(limite))
+                .sorted(Comparator.comparing(this::proximaActualizacion))
+                .toList();
+
+        Pageable pageable = PageRequest.of(page, TAMANIO_PAGINA_DASHBOARD);
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + TAMANIO_PAGINA_DASHBOARD, pendientes.size());
+        List<Contrato> subLista = (start > pendientes.size()) ? List.of() : pendientes.subList(start, end);
+
+        return new PageImpl<>(subLista, pageable, pendientes.size());
+    }
+
+    /**
+     * Contratos activos que ya vencieron o vencen dentro de los próximos
+     * DIAS_AVISO_VENCIMIENTO días. fechaFin es una columna real, así que
+     * esta consulta se pagina directamente en la base de datos.
+     */
+    public Page<Contrato> listarProximosAVencer(int page) {
+        LocalDate limite = LocalDate.now().plusDays(DIAS_AVISO_VENCIMIENTO);
+        Pageable pageable = PageRequest.of(page, TAMANIO_PAGINA_DASHBOARD, Sort.by("fechaFin").ascending());
+        return contratoRepository.findByActivoTrueAndFechaFinLessThanEqual(limite, pageable);
     }
 
     public Page<Contrato> listarPaginados(int page) {

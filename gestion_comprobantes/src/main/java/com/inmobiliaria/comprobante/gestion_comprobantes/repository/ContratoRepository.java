@@ -2,6 +2,8 @@ package com.inmobiliaria.comprobante.gestion_comprobantes.repository;
 
 
 import com.inmobiliaria.comprobante.gestion_comprobantes.model.Contrato;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +16,8 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     List<Contrato> findByActivoTrue();
     boolean existsByClienteIdAndActivoTrue(Long clienteId);
     boolean existsByPropietarioIdAndActivoTrue(Long propietarioId);
-    long countByFechaFinBetweenAndActivoTrue(LocalDate inicio, LocalDate fin);
+
+    // Contratos activos ya vencidos o que vencen hasta cierta fecha límite
+    // (usado para el aviso de "próximos a vencer" del dashboard).
+    Page<Contrato> findByActivoTrueAndFechaFinLessThanEqual(LocalDate hasta, Pageable pageable);
 }
