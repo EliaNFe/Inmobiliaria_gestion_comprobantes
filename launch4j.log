@@ -1,0 +1,26 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\Elian\Documents\GitHub\Inmobiliaria_gestion_comprobantes\InmoDoc.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Elian\Documents\GitHub\Inmobiliaria_gestion_comprobantes\.
+Requires JDK:	No
+Requires 64-Bit: Yes
+Java min ver:	1.021.000_000
+Java max ver:	
+JRE paths:	java21
+Check launcher:	C:\Users\Elian\Documents\GitHub\Inmobiliaria_gestion_comprobantes\java21\bin\javaw.exe (not found)
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+64-bit search:	SOFTWARE\JavaSoft\JRE...
+64-bit search:	SOFTWARE\JavaSoft\JDK...
+Check:		SOFTWARE\JavaSoft\JDK\21.0.8
+Version string: 1.021.000_008 / 64-Bit (OK)
+Check launcher:	C:\Program Files\BellSoft\LibericaJDK-21\bin\javaw.exe (OK)
+Match:		1.021.000_008
+Runtime used:	1.021.000_008 (64-bit)
+Launcher:	C:\Program Files\BellSoft\LibericaJDK-21\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Elian\Documents\GitHub\Inmobiliaria_gestion_comprobantes\InmoDoc.exe"
+Args length:	84/32768 chars
+Exit code:	0

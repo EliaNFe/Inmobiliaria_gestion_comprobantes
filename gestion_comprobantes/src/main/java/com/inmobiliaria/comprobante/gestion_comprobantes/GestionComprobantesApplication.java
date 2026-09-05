@@ -19,6 +19,12 @@ public class GestionComprobantesApplication {
         context = SpringApplication.run(GestionComprobantesApplication.class, args);
 
         configurarTrayIcon();
+
+        // Acá ya sabemos que el sistema está completamente levantado
+        // (SpringApplication.run no vuelve hasta que termina de arrancar),
+        // así que abrimos el navegador solo, sin necesidad de que el .bat
+        // esté reintentando/esperando por afuera.
+        abrirNavegador();
     }
 
     private static void configurarTrayIcon() {
