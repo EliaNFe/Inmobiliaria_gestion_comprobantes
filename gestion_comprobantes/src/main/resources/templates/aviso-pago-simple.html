@@ -34,12 +34,16 @@
             <!-- Ítems dinámicos -->
             <div th:each="entry : ${items}" class="flex justify-between text-sm">
                 <span class="text-slate-500 font-medium" th:text="${entry.key}"></span>
-                <span class="font-bold text-slate-700" th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></span>
+                <span class="font-bold"
+                      th:classappend="${entry.value.signum() < 0} ? 'text-red-600' : 'text-slate-700'"
+                      th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></span>
             </div>
 
             <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
                 <span class="text-orange-600 font-black text-xs uppercase tracking-tight">Total a pagar</span>
-                <span class="text-2xl font-black text-slate-900" th:text="'$ ' + ${#numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}"></span>
+                <span class="text-2xl font-black"
+                      th:classappend="${total.signum() < 0} ? 'text-red-600' : 'text-slate-900'"
+                      th:text="'$ ' + ${#numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}"></span>
             </div>
         </div>
 

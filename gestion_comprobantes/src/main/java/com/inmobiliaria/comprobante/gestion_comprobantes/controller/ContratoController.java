@@ -63,7 +63,7 @@ public class ContratoController {
             for (int i = 0; i < nombreItem.size() && i < montoItem.size(); i++) {
                 String nombre = nombreItem.get(i);
                 BigDecimal monto = montoItem.get(i);
-                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) > 0) {
+                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) != 0) {
                     items.put(nombre.trim(), monto);
                     total = total.add(monto);
                 }
@@ -234,7 +234,7 @@ public class ContratoController {
             for (int i = 0; i < nombreItem.size() && i < montoItem.size(); i++) {
                 String nombre = nombreItem.get(i);
                 BigDecimal monto = montoItem.get(i);
-                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) > 0) {
+                if (nombre != null && !nombre.isBlank() && monto != null && monto.compareTo(BigDecimal.ZERO) != 0) {
                     items.put(nombre.trim(), monto);
                     total = total.add(monto);
                 }

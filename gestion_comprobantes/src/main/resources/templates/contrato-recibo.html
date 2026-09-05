@@ -75,13 +75,16 @@
         <!-- Ítems dinámicos -->
         <tr th:each="entry : ${items}">
             <td class="py-1 text-[9px] text-slate-600" th:text="${entry.key}"></td>
-            <td class="text-right text-[9px] font-mono" th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></td>
+            <td class="text-right text-[9px] font-mono"
+                th:classappend="${entry.value.signum() < 0} ? 'text-red-600' : ''"
+                th:text="'$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></td>
         </tr>
         </tbody>
         <tfoot>
         <tr class="border-t-2 border-slate-900 bg-orange-50">
             <td class="py-2 px-1 text-[9px] font-black uppercase text-orange-900">Total Percibido</td>
-            <td class="py-2 px-1 text-right text-sm font-black text-orange-900"
+            <td class="py-2 px-1 text-right text-sm font-black"
+                th:classappend="${(total ?: contrato.montoMensual).signum() < 0} ? 'text-red-600' : 'text-orange-900'"
                 th:text="'$ ' + ${#numbers.formatDecimal(total ?: contrato.montoMensual, 1, 'POINT', 2, 'COMMA')}"></td>
         </tr>
         </tfoot>
